@@ -1,0 +1,14 @@
+[package]
+name = "minimal-rust-km"
+version = "0.1.0"
+authors = ["Clemens Tiedt <clemenstiedt@gmx.de>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "minimod"
+crate-type = ["staticlib"]
+
+[dependencies]
+libc = {version = "0.2.70", default-features = false}
