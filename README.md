@@ -19,7 +19,7 @@ We also include a C function to be called from Rust as an example of how to addi
 ### What `lib.rs` does
 
 This is where most of the code in a real kernel module should go. In our case, we just have a `rust_main` function that calls a C function.
-Since we are in a `#[no_std]` context, we need to define some language items ourselves.
+Since we are in a `#![no_std]` context, we need to define some language items ourselves.
 
 ### What's still missing
 

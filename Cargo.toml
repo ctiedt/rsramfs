@@ -11,4 +11,3 @@ name = "minimod"
 crate-type = ["staticlib"]
 
 [dependencies]
-libc = {version = "0.2.70", default-features = false}
