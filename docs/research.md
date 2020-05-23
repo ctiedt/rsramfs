@@ -10,3 +10,5 @@
 ## Resources about EXT2
 - [The second extended file system](https://www.nongnu.org/ext2-doc/ext2.html) by Dave Poirier
 - [The second extended file system](http://www.science.unitn.it/~fiorella/guidelinux/tlk/node95.html) by David A. Rusling
+- [Design and Implementation of the Second Extended Filesystem](http://e2fsprogs.sourceforge.net/ext2intro.html) by Rémy Card et al. 
+- [The ext2 repo](https://github.com/torvalds/linux/tree/master/fs/ext2)
