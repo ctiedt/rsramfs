@@ -1,17 +1,21 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/slab.h>
 
 MODULE_LICENSE("GPL");
 
 extern int rust_main(void);
 
-void callme(void)
+void *c_alloc(size_t size)
 {
-    printk(KERN_INFO "Test successful!\n");
+    return kmalloc(size, GFP_KERNEL);
 }
 
-int test_fn(void) { return 42; }
+void c_print(char *msg, int len)
+{
+    printk(KERN_INFO "%.*s", len, msg);
+}
 
 int init_km(void)
 {
