@@ -14,7 +14,7 @@ clean:
 	rm -r build
 	cargo clean
 
-test: build/minimod.ko
-	sudo insmod build/minimod.ko
-	sudo rmmod minimod
+test: build/ext2rs.ko
+	sudo insmod build/ext2rs.ko
+	sudo rmmod ext2rs
 	dmesg | tail -10
