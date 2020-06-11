@@ -14,7 +14,7 @@ clean:
 	rm -r build
 	cargo clean
 
-test: build/ext2rs.ko
-	sudo insmod build/ext2rs.ko
-	sudo rmmod ext2rs
+test: build/rsramfs.ko
+	sudo insmod build/rsramfs.ko
+	sudo rmmod rsramfs
 	dmesg | tail -10

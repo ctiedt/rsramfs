@@ -1,15 +1,17 @@
 [package]
-name = "minimal-rust-km"
+name = "rsramfs"
 version = "0.1.0"
-authors = ["Clemens Tiedt <clemenstiedt@gmx.de>"]
+authors = ["Clemens Tiedt <clemens.tiedt@student.hpi.de>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "ext2rs"
+name = "rsramfs"
 crate-type = ["staticlib"]
 
 [dependencies]
+cstr_core = "0.2"
+cty="0.2"
 lazy_static = {version = "1.4", features = ["spin_no_std"]}
 spin = "0.5"
