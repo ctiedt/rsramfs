@@ -17,6 +17,14 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Linus Torvalds");
 MODULE_AUTHOR("Clemens Tiedt");
 
+void _mapping_set_unevictable(struct address_space *m) {
+    mapping_set_unevictable(m);
+}
+
+void _mapping_set_gfp_mask(struct address_space *m, gfp_t mask) {
+    m->gfp_mask = mask;
+}
+
 struct dentry *c_dget(struct dentry *dentry)
 {
     return dget(dentry);
@@ -52,7 +60,7 @@ struct ramfs_fs_info
 
 #define RAMFS_DEFAULT_MODE 0775
 
-static unsigned long
+unsigned long
 ramfs_mmu_get_unmapped_area(struct file *file, unsigned long addr, unsigned long len,
                             unsigned long pgoff, unsigned long flags)
 {
@@ -108,45 +116,6 @@ const struct inode_operations ramfs_file_inode_ops = {
     .setattr = simple_setattr,
     .getattr = simple_getattr,
 };
-
-// Creates a new inode and fills in the required fields,
-// i.e. the supported operations.
-// We only have to define some manually.
-struct inode *
-ramfs_get_inode(struct super_block *sb, const struct inode *dir, umode_t mode, dev_t dev)
-{
-    struct inode *inode = new_inode(sb);
-
-    if (inode)
-    {
-        inode->i_ino = get_next_ino();
-        inode_init_owner(inode, dir, mode);
-        inode->i_mapping->a_ops = &ramfs_aops;
-        mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
-        mapping_set_unevictable(inode->i_mapping);
-        inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
-        switch (mode & S_IFMT)
-        {
-        default:
-            init_special_inode(inode, mode, dev);
-            break;
-        case S_IFREG:
-            inode->i_op = &ramfs_file_inode_ops;
-            inode->i_fop = &ramfs_file_ops;
-            break;
-        case S_IFDIR:
-            inode->i_op = &ramfs_dir_inode_ops;
-            inode->i_fop = &simple_dir_operations;
-            inc_nlink(inode);
-            break;
-        case S_IFLNK:
-            inode->i_op = &page_symlink_inode_operations;
-            inode_nohighmem(inode);
-            break;
-        }
-    }
-    return inode;
-}
 
 // The operations we support on directories.
 // We provide some ourselves and use generic

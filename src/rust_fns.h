@@ -36,3 +36,8 @@ extern int ramfs_create(struct inode *dir, struct dentry *dentry, umode_t mode, 
 // We need some error checking here
 // since symlinking could fail.
 extern int ramfs_symlink(struct inode *dir, struct dentry *dentry, const char *symname);
+
+// Creates a new inode and fills in the required fields,
+// i.e. the supported operations.
+// We only have to define some manually.
+extern struct inode *ramfs_get_inode(struct super_block *sb, const struct inode *dir, umode_t mode, dev_t dev);

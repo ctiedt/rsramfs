@@ -210,7 +210,7 @@ pub type fmode_t = cty::c_uint;
 pub type phys_addr_t = u64;
 pub type resource_size_t = phys_addr_t;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct atomic_t {
     pub counter: cty::c_int,
 }
@@ -238,7 +238,7 @@ fn bindgen_test_layout_atomic_t() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct atomic64_t {
     pub counter: cty::c_long,
 }
@@ -304,6 +304,11 @@ fn bindgen_test_layout_list_head() {
         )
     );
 }
+impl Default for list_head {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct hlist_head {
@@ -331,6 +336,11 @@ fn bindgen_test_layout_hlist_head() {
             stringify!(first)
         )
     );
+}
+impl Default for hlist_head {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -370,6 +380,11 @@ fn bindgen_test_layout_hlist_node() {
             stringify!(pprev)
         )
     );
+}
+impl Default for hlist_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[doc = " struct callback_head - callback structure for use with RCU and task_work"]
 #[doc = " @next: next update requests in a list"]
@@ -426,6 +441,11 @@ fn bindgen_test_layout_callback_head() {
             stringify!(func)
         )
     );
+}
+impl Default for callback_head {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[repr(align(64))]
@@ -1061,11 +1081,16 @@ fn bindgen_test_layout_module() {
         )
     );
 }
+impl Default for module {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 extern "C" {
     pub static mut __this_module: module;
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct kernel_symbol {
     pub value_offset: cty::c_int,
     pub name_offset: cty::c_int,
@@ -1104,9 +1129,9 @@ fn bindgen_test_layout_kernel_symbol() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct file_operations {
-    pub owner: *mut module,
+    pub owner: *const module,
     pub llseek: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut file, arg2: loff_t, arg3: cty::c_int) -> loff_t,
     >,
@@ -1611,8 +1636,13 @@ fn bindgen_test_layout_file_operations() {
         )
     );
 }
+impl Default for file_operations {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct bug_entry {
     pub bug_addr_disp: cty::c_int,
     pub file_disp: cty::c_int,
@@ -1674,7 +1704,7 @@ fn bindgen_test_layout_bug_entry() {
 }
 pub type time64_t = __s64;
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Default)]
 pub struct timespec {
     pub tv_sec: __kernel_time_t,
     pub tv_nsec: cty::c_long,
@@ -1713,7 +1743,7 @@ fn bindgen_test_layout_timespec() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct timespec64 {
     pub tv_sec: time64_t,
     pub tv_nsec: cty::c_long,
@@ -1884,6 +1914,11 @@ fn bindgen_test_layout_restart_block__bindgen_ty_1__bindgen_ty_1() {
         )
     );
 }
+impl Default for restart_block__bindgen_ty_1__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct restart_block__bindgen_ty_1__bindgen_ty_2 {
     pub clockid: clockid_t,
@@ -1942,6 +1977,11 @@ fn bindgen_test_layout_restart_block__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1()
         )
     );
 }
+impl Default for restart_block__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_restart_block__bindgen_ty_1__bindgen_ty_2() {
     assert_eq!(
@@ -1999,6 +2039,11 @@ fn bindgen_test_layout_restart_block__bindgen_ty_1__bindgen_ty_2() {
             stringify!(expires)
         )
     );
+}
+impl Default for restart_block__bindgen_ty_1__bindgen_ty_2 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -2093,6 +2138,11 @@ fn bindgen_test_layout_restart_block__bindgen_ty_1__bindgen_ty_3() {
         )
     );
 }
+impl Default for restart_block__bindgen_ty_1__bindgen_ty_3 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_restart_block__bindgen_ty_1() {
     assert_eq!(
@@ -2142,6 +2192,11 @@ fn bindgen_test_layout_restart_block__bindgen_ty_1() {
         )
     );
 }
+impl Default for restart_block__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_restart_block() {
     assert_eq!(
@@ -2165,8 +2220,13 @@ fn bindgen_test_layout_restart_block() {
         )
     );
 }
+impl Default for restart_block {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct pt_regs {
     pub r15: cty::c_ulong,
     pub r14: cty::c_ulong,
@@ -2415,7 +2475,7 @@ fn bindgen_test_layout_pt_regs() {
 }
 #[repr(C)]
 #[repr(align(1))]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct desc_struct {
     pub _bindgen_opaque_blob: [u8; 8usize],
 }
@@ -2438,7 +2498,7 @@ pub type pudval_t = cty::c_ulong;
 pub type pgdval_t = cty::c_ulong;
 pub type pgprotval_t = cty::c_ulong;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct pte_t {
     pub pte: pteval_t,
 }
@@ -2466,7 +2526,7 @@ fn bindgen_test_layout_pte_t() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct pgprot {
     pub pgprot: pgprotval_t,
 }
@@ -2495,7 +2555,7 @@ fn bindgen_test_layout_pgprot() {
 }
 pub type pgprot_t = pgprot;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct pgd_t {
     pub pgd: pgdval_t,
 }
@@ -2523,7 +2583,7 @@ fn bindgen_test_layout_pgd_t() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct pud_t {
     pub pud: pudval_t,
 }
@@ -2551,7 +2611,7 @@ fn bindgen_test_layout_pud_t() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct pmd_t {
     pub pmd: pmdval_t,
 }
@@ -2581,7 +2641,7 @@ fn bindgen_test_layout_pmd_t() {
 pub type pgtable_t = *mut page;
 pub type jump_label_t = u64;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct jump_entry {
     pub code: jump_label_t,
     pub target: jump_label_t,
@@ -2642,7 +2702,7 @@ pub struct qspinlock__bindgen_ty_1 {
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct qspinlock__bindgen_ty_1__bindgen_ty_1 {
     pub locked: u8,
     pub pending: u8,
@@ -2693,7 +2753,7 @@ fn bindgen_test_layout_qspinlock__bindgen_ty_1__bindgen_ty_1() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct qspinlock__bindgen_ty_1__bindgen_ty_2 {
     pub locked_pending: u16,
     pub tail: u16,
@@ -2766,6 +2826,11 @@ fn bindgen_test_layout_qspinlock__bindgen_ty_1() {
         )
     );
 }
+impl Default for qspinlock__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_qspinlock() {
     assert_eq!(
@@ -2778,6 +2843,11 @@ fn bindgen_test_layout_qspinlock() {
         4usize,
         concat!("Alignment of ", stringify!(qspinlock))
     );
+}
+impl Default for qspinlock {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 pub type arch_spinlock_t = qspinlock;
 #[repr(C)]
@@ -2792,7 +2862,7 @@ pub struct qrwlock__bindgen_ty_1 {
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct qrwlock__bindgen_ty_1__bindgen_ty_1 {
     pub wlocked: u8,
     pub __lstate: [u8; 3usize],
@@ -2862,6 +2932,11 @@ fn bindgen_test_layout_qrwlock__bindgen_ty_1() {
         )
     );
 }
+impl Default for qrwlock__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_qrwlock() {
     assert_eq!(
@@ -2884,6 +2959,11 @@ fn bindgen_test_layout_qrwlock() {
             stringify!(wait_lock)
         )
     );
+}
+impl Default for qrwlock {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 pub type arch_rwlock_t = qrwlock;
 #[repr(C)]
@@ -2925,8 +3005,13 @@ fn bindgen_test_layout_math_emu_info() {
         )
     );
 }
+impl Default for math_emu_info {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct cpumask {
     pub bits: [cty::c_ulong; 4usize],
 }
@@ -2957,7 +3042,7 @@ pub type cpumask_t = cpumask;
 pub type atomic_long_t = atomic64_t;
 pub type tracepoint_ptr_t = cty::c_int;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct fregs_state {
     pub cwd: u32,
     pub swd: u32,
@@ -3094,7 +3179,7 @@ pub struct fxregs_state__bindgen_ty_1 {
     pub bindgen_union_field: [u64; 2usize],
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct fxregs_state__bindgen_ty_1__bindgen_ty_1 {
     pub rip: u64,
     pub rdp: u64,
@@ -3145,7 +3230,7 @@ fn bindgen_test_layout_fxregs_state__bindgen_ty_1__bindgen_ty_1() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct fxregs_state__bindgen_ty_1__bindgen_ty_2 {
     pub fip: u32,
     pub fcs: u32,
@@ -3236,6 +3321,11 @@ fn bindgen_test_layout_fxregs_state__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(fxregs_state__bindgen_ty_1))
     );
 }
+impl Default for fxregs_state__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct fxregs_state__bindgen_ty_2 {
     pub padding1: __BindgenUnionField<[u32; 12usize]>,
@@ -3278,6 +3368,11 @@ fn bindgen_test_layout_fxregs_state__bindgen_ty_2() {
             stringify!(sw_reserved)
         )
     );
+}
+impl Default for fxregs_state__bindgen_ty_2 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_fxregs_state() {
@@ -3381,6 +3476,11 @@ fn bindgen_test_layout_fxregs_state() {
             stringify!(padding)
         )
     );
+}
+impl Default for fxregs_state {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -3575,6 +3675,11 @@ fn bindgen_test_layout_swregs_state() {
         )
     );
 }
+impl Default for swregs_state {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[repr(align(64))]
 pub struct xregs_state {
@@ -3592,6 +3697,11 @@ fn bindgen_test_layout_xregs_state() {
         64usize,
         concat!("Alignment of ", stringify!(xregs_state))
     );
+}
+impl Default for xregs_state {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[repr(align(64))]
@@ -3666,6 +3776,11 @@ fn bindgen_test_layout_fpregs_state() {
         )
     );
 }
+impl Default for fpregs_state {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[repr(align(64))]
 pub struct fpu {
@@ -3717,8 +3832,13 @@ fn bindgen_test_layout_fpu() {
         )
     );
 }
+impl Default for fpu {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C, packed)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct orc_entry {
     pub sp_offset: s16,
     pub bp_offset: s16,
@@ -3831,7 +3951,7 @@ impl orc_entry {
     }
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct seq_operations {
     pub start: ::core::option::Option<
         unsafe extern "C" fn(m: *mut seq_file, pos: *mut loff_t) -> *mut cty::c_void,
@@ -3907,7 +4027,7 @@ pub struct perf_event {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct mm_segment_t {
     pub seg: cty::c_ulong,
 }
@@ -4162,6 +4282,11 @@ fn bindgen_test_layout_thread_struct() {
         )
     );
 }
+impl Default for thread_struct {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 impl thread_struct {
     #[inline]
     pub fn sig_on_uaccess_err(&self) -> cty::c_uint {
@@ -4204,7 +4329,7 @@ impl thread_struct {
     }
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct thread_info {
     pub flags: cty::c_ulong,
     pub status: u32,
@@ -4243,7 +4368,7 @@ fn bindgen_test_layout_thread_info() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct lock_class_key {}
 #[test]
 fn bindgen_test_layout_lock_class_key() {
@@ -4259,7 +4384,7 @@ fn bindgen_test_layout_lock_class_key() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct lockdep_map {}
 #[test]
 fn bindgen_test_layout_lockdep_map() {
@@ -4301,6 +4426,11 @@ fn bindgen_test_layout_raw_spinlock() {
         )
     );
 }
+impl Default for raw_spinlock {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type raw_spinlock_t = raw_spinlock;
 #[repr(C)]
 pub struct spinlock {
@@ -4334,6 +4464,11 @@ fn bindgen_test_layout_spinlock__bindgen_ty_1() {
         )
     );
 }
+impl Default for spinlock__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_spinlock() {
     assert_eq!(
@@ -4346,6 +4481,11 @@ fn bindgen_test_layout_spinlock() {
         4usize,
         concat!("Alignment of ", stringify!(spinlock))
     );
+}
+impl Default for spinlock {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 pub type spinlock_t = spinlock;
 #[repr(C)]
@@ -4375,8 +4515,13 @@ fn bindgen_test_layout_rwlock_t() {
         )
     );
 }
+impl Default for rwlock_t {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct seqcount {
     pub sequence: cty::c_uint,
 }
@@ -4585,8 +4730,13 @@ fn bindgen_test_layout_user_namespace() {
         )
     );
 }
+impl Default for user_namespace {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct kuid_t {
     pub val: uid_t,
 }
@@ -4614,7 +4764,7 @@ fn bindgen_test_layout_kuid_t() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct kgid_t {
     pub val: gid_t,
 }
@@ -4642,7 +4792,7 @@ fn bindgen_test_layout_kgid_t() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct kstat {
     pub result_mask: u32,
     pub mode: umode_t,
@@ -4883,9 +5033,14 @@ fn bindgen_test_layout_wait_queue_head() {
         )
     );
 }
+impl Default for wait_queue_head {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type wait_queue_head_t = wait_queue_head;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct nodemask_t {
     pub bits: [cty::c_ulong; 1usize],
 }
@@ -4913,7 +5068,7 @@ fn bindgen_test_layout_nodemask_t() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct arch_tlbflush_unmap_batch {
     pub cpumask: cpumask,
 }
@@ -4981,8 +5136,13 @@ fn bindgen_test_layout_vmacache() {
         )
     );
 }
+impl Default for vmacache {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct task_rss_stat {
     pub events: cty::c_int,
     pub count: [cty::c_int; 4usize],
@@ -5021,7 +5181,7 @@ fn bindgen_test_layout_task_rss_stat() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct mm_rss_stat {
     pub count: [atomic_long_t; 4usize],
 }
@@ -5098,8 +5258,13 @@ fn bindgen_test_layout_page_frag() {
         )
     );
 }
+impl Default for page_frag {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct tlbflush_unmap_batch {
     pub arch: arch_tlbflush_unmap_batch,
     pub flush_required: bool_,
@@ -5200,6 +5365,11 @@ fn bindgen_test_layout_rb_node() {
         )
     );
 }
+impl Default for rb_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct rb_root {
@@ -5227,6 +5397,11 @@ fn bindgen_test_layout_rb_root() {
             stringify!(rb_node)
         )
     );
+}
+impl Default for rb_root {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -5267,8 +5442,13 @@ fn bindgen_test_layout_rb_root_cached() {
         )
     );
 }
+impl Default for rb_root_cached {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct optimistic_spin_queue {
     pub tail: atomic_t,
 }
@@ -5366,6 +5546,11 @@ fn bindgen_test_layout_rw_semaphore() {
         )
     );
 }
+impl Default for rw_semaphore {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct completion {
     pub done: cty::c_uint,
@@ -5403,6 +5588,11 @@ fn bindgen_test_layout_completion() {
             stringify!(wait)
         )
     );
+}
+impl Default for completion {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct mutex {
@@ -5463,6 +5653,11 @@ fn bindgen_test_layout_mutex() {
             stringify!(wait_list)
         )
     );
+}
+impl Default for mutex {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 pub type ktime_t = s64;
 #[repr(C)]
@@ -5526,6 +5721,11 @@ fn bindgen_test_layout_timer_list() {
         )
     );
 }
+impl Default for timer_list {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct workqueue_struct {
@@ -5581,6 +5781,11 @@ fn bindgen_test_layout_work_struct() {
             stringify!(func)
         )
     );
+}
+impl Default for work_struct {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -5643,6 +5848,11 @@ fn bindgen_test_layout_delayed_work() {
         )
     );
 }
+impl Default for delayed_work {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct rcu_work {
@@ -5693,8 +5903,13 @@ fn bindgen_test_layout_rcu_work() {
         )
     );
 }
+impl Default for rcu_work {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct arch_uprobe_task {
     pub saved_scratch_register: cty::c_ulong,
     pub saved_trap_nr: cty::c_uint,
@@ -5767,7 +5982,7 @@ pub struct uprobe_task__bindgen_ty_1 {
     pub bindgen_union_field: [u64; 3usize],
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct uprobe_task__bindgen_ty_1__bindgen_ty_1 {
     pub autask: arch_uprobe_task,
     pub vaddr: cty::c_ulong,
@@ -5868,6 +6083,11 @@ fn bindgen_test_layout_uprobe_task__bindgen_ty_1__bindgen_ty_2() {
         )
     );
 }
+impl Default for uprobe_task__bindgen_ty_1__bindgen_ty_2 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_uprobe_task__bindgen_ty_1() {
     assert_eq!(
@@ -5880,6 +6100,11 @@ fn bindgen_test_layout_uprobe_task__bindgen_ty_1() {
         8usize,
         concat!("Alignment of ", stringify!(uprobe_task__bindgen_ty_1))
     );
+}
+impl Default for uprobe_task__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_uprobe_task() {
@@ -5943,6 +6168,11 @@ fn bindgen_test_layout_uprobe_task() {
             stringify!(depth)
         )
     );
+}
+impl Default for uprobe_task {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -6027,6 +6257,11 @@ fn bindgen_test_layout_return_instance() {
         )
     );
 }
+impl Default for return_instance {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct xol_area {
@@ -6059,6 +6294,11 @@ fn bindgen_test_layout_uprobes_state() {
             stringify!(xol_area)
         )
     );
+}
+impl Default for uprobes_state {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct mm_context_t {
@@ -6212,6 +6452,11 @@ fn bindgen_test_layout_mm_context_t() {
         )
     );
 }
+impl Default for mm_context_t {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type vm_fault_t = cty::c_int;
 #[repr(C)]
 #[derive(Debug)]
@@ -6319,6 +6564,11 @@ fn bindgen_test_layout_page__bindgen_ty_1__bindgen_ty_1() {
         )
     );
 }
+impl Default for page__bindgen_ty_1__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct page__bindgen_ty_1__bindgen_ty_2 {
     pub __bindgen_anon_1: page__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1,
@@ -6401,6 +6651,11 @@ fn bindgen_test_layout_page__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1__bindgen_t
         )
     );
 }
+impl Default for page__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_page__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1() {
     assert_eq!(
@@ -6433,6 +6688,11 @@ fn bindgen_test_layout_page__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1() {
         )
     );
 }
+impl Default for page__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct page__bindgen_ty_1__bindgen_ty_2__bindgen_ty_2 {
     pub s_mem: __BindgenUnionField<*mut cty::c_void>,
@@ -6443,7 +6703,7 @@ pub struct page__bindgen_ty_1__bindgen_ty_2__bindgen_ty_2 {
 }
 #[repr(C)]
 #[repr(align(4))]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct page__bindgen_ty_1__bindgen_ty_2__bindgen_ty_2__bindgen_ty_1 {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u16>,
 }
@@ -6568,6 +6828,11 @@ fn bindgen_test_layout_page__bindgen_ty_1__bindgen_ty_2__bindgen_ty_2() {
         )
     );
 }
+impl Default for page__bindgen_ty_1__bindgen_ty_2__bindgen_ty_2 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_page__bindgen_ty_1__bindgen_ty_2() {
     assert_eq!(
@@ -6610,8 +6875,13 @@ fn bindgen_test_layout_page__bindgen_ty_1__bindgen_ty_2() {
         )
     );
 }
+impl Default for page__bindgen_ty_1__bindgen_ty_2 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct page__bindgen_ty_1__bindgen_ty_3 {
     pub compound_head: cty::c_ulong,
     pub compound_dtor: cty::c_uchar,
@@ -6748,6 +7018,11 @@ fn bindgen_test_layout_page__bindgen_ty_1__bindgen_ty_4() {
         )
     );
 }
+impl Default for page__bindgen_ty_1__bindgen_ty_4 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct page__bindgen_ty_1__bindgen_ty_5 {
     pub _pt_pad_1: cty::c_ulong,
@@ -6806,6 +7081,11 @@ fn bindgen_test_layout_page__bindgen_ty_1__bindgen_ty_5__bindgen_ty_1() {
             stringify!(pt_frag_refcount)
         )
     );
+}
+impl Default for page__bindgen_ty_1__bindgen_ty_5__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_page__bindgen_ty_1__bindgen_ty_5() {
@@ -6874,6 +7154,11 @@ fn bindgen_test_layout_page__bindgen_ty_1__bindgen_ty_5() {
         )
     );
 }
+impl Default for page__bindgen_ty_1__bindgen_ty_5 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct page__bindgen_ty_1__bindgen_ty_6 {
@@ -6936,6 +7221,11 @@ fn bindgen_test_layout_page__bindgen_ty_1__bindgen_ty_6() {
         )
     );
 }
+impl Default for page__bindgen_ty_1__bindgen_ty_6 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_page__bindgen_ty_1() {
     assert_eq!(
@@ -6960,6 +7250,11 @@ fn bindgen_test_layout_page__bindgen_ty_1() {
             stringify!(callback_head)
         )
     );
+}
+impl Default for page__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct page__bindgen_ty_2 {
@@ -7022,6 +7317,11 @@ fn bindgen_test_layout_page__bindgen_ty_2() {
         )
     );
 }
+impl Default for page__bindgen_ty_2 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_page() {
     assert_eq!(
@@ -7065,6 +7365,11 @@ fn bindgen_test_layout_page() {
         )
     );
 }
+impl Default for page {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct vm_userfaultfd_ctx {
@@ -7092,6 +7397,11 @@ fn bindgen_test_layout_vm_userfaultfd_ctx() {
             stringify!(ctx)
         )
     );
+}
+impl Default for vm_userfaultfd_ctx {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -7158,6 +7468,11 @@ fn bindgen_test_layout_vm_area_struct__bindgen_ty_1() {
             stringify!(rb_subtree_last)
         )
     );
+}
+impl Default for vm_area_struct__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_vm_area_struct() {
@@ -7356,6 +7671,11 @@ fn bindgen_test_layout_vm_area_struct() {
         )
     );
 }
+impl Default for vm_area_struct {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct core_thread {
@@ -7394,6 +7714,11 @@ fn bindgen_test_layout_core_thread() {
             stringify!(next)
         )
     );
+}
+impl Default for core_thread {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct core_state {
@@ -7443,6 +7768,11 @@ fn bindgen_test_layout_core_state() {
             stringify!(startup)
         )
     );
+}
+impl Default for core_state {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -8225,6 +8555,11 @@ fn bindgen_test_layout_mm_struct__bindgen_ty_1() {
         )
     );
 }
+impl Default for mm_struct__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_mm_struct() {
     assert_eq!(
@@ -8247,6 +8582,11 @@ fn bindgen_test_layout_mm_struct() {
             stringify!(cpu_bitmap)
         )
     );
+}
+impl Default for mm_struct {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 pub type isolate_mode_t = cty::c_uint;
 #[repr(C)]
@@ -8276,6 +8616,11 @@ fn bindgen_test_layout_llist_node() {
             stringify!(next)
         )
     );
+}
+impl Default for llist_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 pub type smp_call_func_t = ::core::option::Option<unsafe extern "C" fn(info: *mut cty::c_void)>;
 #[repr(C)]
@@ -8339,6 +8684,11 @@ fn bindgen_test_layout___call_single_data() {
         )
     );
 }
+impl Default for __call_single_data {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct fwnode_handle {
@@ -8377,6 +8727,11 @@ fn bindgen_test_layout_fwnode_handle() {
             stringify!(ops)
         )
     );
+}
+impl Default for fwnode_handle {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[doc = " struct fwnode_endpoint - Fwnode graph endpoint"]
 #[doc = " @port: Port number"]
@@ -8432,6 +8787,11 @@ fn bindgen_test_layout_fwnode_endpoint() {
         )
     );
 }
+impl Default for fwnode_endpoint {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[doc = " struct fwnode_reference_args - Fwnode reference with additional arguments"]
 #[doc = " @fwnode:- A reference to the base fwnode"]
 #[doc = " @nargs: Number of elements in @args array"]
@@ -8486,6 +8846,11 @@ fn bindgen_test_layout_fwnode_reference_args() {
         )
     );
 }
+impl Default for fwnode_reference_args {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[doc = " struct fwnode_operations - Operations for fwnode interface"]
 #[doc = " @get: Get a reference to an fwnode."]
 #[doc = " @put: Put a reference to an fwnode."]
@@ -8506,7 +8871,7 @@ fn bindgen_test_layout_fwnode_reference_args() {
 #[doc = " @graph_get_port_parent: Return the parent node of a port node."]
 #[doc = " @graph_parse_endpoint: Parse endpoint for port and endpoint id."]
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct fwnode_operations {
     pub get: ::core::option::Option<
         unsafe extern "C" fn(fwnode: *mut fwnode_handle) -> *mut fwnode_handle,
@@ -8882,6 +9247,11 @@ fn bindgen_test_layout_vm_struct() {
         )
     );
 }
+impl Default for vm_struct {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type proc_handler = ::core::option::Option<
     unsafe extern "C" fn(
         ctl: *mut ctl_table,
@@ -8928,6 +9298,11 @@ fn bindgen_test_layout_ctl_table_poll() {
             stringify!(wait)
         )
     );
+}
+impl Default for ctl_table_poll {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -9045,6 +9420,11 @@ fn bindgen_test_layout_ctl_table() {
         )
     );
 }
+impl Default for ctl_table {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct ctl_node {
@@ -9083,6 +9463,11 @@ fn bindgen_test_layout_ctl_node() {
             stringify!(header)
         )
     );
+}
+impl Default for ctl_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct ctl_table_header {
@@ -9180,6 +9565,11 @@ fn bindgen_test_layout_ctl_table_header__bindgen_ty_1__bindgen_ty_1() {
         )
     );
 }
+impl Default for ctl_table_header__bindgen_ty_1__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_ctl_table_header__bindgen_ty_1() {
     assert_eq!(
@@ -9204,6 +9594,11 @@ fn bindgen_test_layout_ctl_table_header__bindgen_ty_1() {
             stringify!(rcu)
         )
     );
+}
+impl Default for ctl_table_header__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_ctl_table_header() {
@@ -9288,6 +9683,11 @@ fn bindgen_test_layout_ctl_table_header() {
         )
     );
 }
+impl Default for ctl_table_header {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct ctl_dir {
     pub header: ctl_table_header,
@@ -9325,6 +9725,11 @@ fn bindgen_test_layout_ctl_dir() {
             stringify!(root)
         )
     );
+}
+impl Default for ctl_dir {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct ctl_table_set {
@@ -9364,6 +9769,11 @@ fn bindgen_test_layout_ctl_table_set() {
             stringify!(dir)
         )
     );
+}
+impl Default for ctl_table_set {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct ctl_table_root {
@@ -9435,6 +9845,11 @@ fn bindgen_test_layout_ctl_table_root() {
             stringify!(permissions)
         )
     );
+}
+impl Default for ctl_table_root {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -9617,12 +10032,17 @@ fn bindgen_test_layout_vdso_image() {
         )
     );
 }
+impl Default for vdso_image {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type Elf64_Addr = __u64;
 pub type Elf64_Half = __u16;
 pub type Elf64_Word = __u32;
 pub type Elf64_Xword = __u64;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct elf64_sym {
     pub st_name: Elf64_Word,
     pub st_info: cty::c_uchar,
@@ -9762,6 +10182,11 @@ fn bindgen_test_layout_radix_tree_node__bindgen_ty_1() {
         )
     );
 }
+impl Default for radix_tree_node__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_radix_tree_node() {
     assert_eq!(
@@ -9855,6 +10280,11 @@ fn bindgen_test_layout_radix_tree_node() {
         )
     );
 }
+impl Default for radix_tree_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct radix_tree_root {
     pub xa_lock: spinlock_t,
@@ -9904,6 +10334,11 @@ fn bindgen_test_layout_radix_tree_root() {
         )
     );
 }
+impl Default for radix_tree_root {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct idr {
     pub idr_rt: radix_tree_root,
@@ -9952,6 +10387,11 @@ fn bindgen_test_layout_idr() {
             stringify!(idr_next)
         )
     );
+}
+impl Default for idr {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -10013,6 +10453,11 @@ fn bindgen_test_layout_kernfs_elem_dir() {
         )
     );
 }
+impl Default for kernfs_elem_dir {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct kernfs_elem_symlink {
@@ -10040,6 +10485,11 @@ fn bindgen_test_layout_kernfs_elem_symlink() {
             stringify!(target_kn)
         )
     );
+}
+impl Default for kernfs_elem_symlink {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -10102,6 +10552,11 @@ fn bindgen_test_layout_kernfs_elem_attr() {
         )
     );
 }
+impl Default for kernfs_elem_attr {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct kernfs_node_id {
     pub __bindgen_anon_1: __BindgenUnionField<kernfs_node_id__bindgen_ty_1>,
@@ -10109,7 +10564,7 @@ pub struct kernfs_node_id {
     pub bindgen_union_field: u64,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct kernfs_node_id__bindgen_ty_1 {
     pub ino: u32,
     pub generation: u32,
@@ -10174,6 +10629,11 @@ fn bindgen_test_layout_kernfs_node_id() {
             stringify!(id)
         )
     );
+}
+impl Default for kernfs_node_id {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct kernfs_node {
@@ -10242,6 +10702,11 @@ fn bindgen_test_layout_kernfs_node__bindgen_ty_1() {
             stringify!(attr)
         )
     );
+}
+impl Default for kernfs_node__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_kernfs_node() {
@@ -10376,8 +10841,13 @@ fn bindgen_test_layout_kernfs_node() {
         )
     );
 }
+impl Default for kernfs_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct kernfs_syscall_ops {
     pub remount_fs: ::core::option::Option<
         unsafe extern "C" fn(
@@ -10492,6 +10962,7 @@ pub struct kernfs_root {
     pub kn: *mut kernfs_node,
     pub flags: cty::c_uint,
     pub ino_idr: idr,
+    pub last_ino: u32,
     pub next_generation: u32,
     pub syscall_ops: *mut kernfs_syscall_ops,
     pub supers: list_head,
@@ -10540,8 +11011,18 @@ fn bindgen_test_layout_kernfs_root() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<kernfs_root>())).next_generation as *const _ as usize },
+        unsafe { &(*(::core::ptr::null::<kernfs_root>())).last_ino as *const _ as usize },
         40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(kernfs_root),
+            "::",
+            stringify!(last_ino)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::core::ptr::null::<kernfs_root>())).next_generation as *const _ as usize },
+        44usize,
         concat!(
             "Offset of field: ",
             stringify!(kernfs_root),
@@ -10579,6 +11060,11 @@ fn bindgen_test_layout_kernfs_root() {
             stringify!(deactivate_waitq)
         )
     );
+}
+impl Default for kernfs_root {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct kernfs_open_file {
@@ -10722,6 +11208,11 @@ fn bindgen_test_layout_kernfs_open_file() {
         )
     );
 }
+impl Default for kernfs_open_file {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 impl kernfs_open_file {
     #[inline]
     pub fn mmapped(&self) -> bool_ {
@@ -10764,7 +11255,7 @@ impl kernfs_open_file {
     }
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct kernfs_ops {
     pub open: ::core::option::Option<unsafe extern "C" fn(of: *mut kernfs_open_file) -> cty::c_int>,
     pub release: ::core::option::Option<unsafe extern "C" fn(of: *mut kernfs_open_file)>,
@@ -11033,6 +11524,11 @@ fn bindgen_test_layout_kobj_ns_type_operations() {
         )
     );
 }
+impl Default for kobj_ns_type_operations {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct attribute {
@@ -11071,6 +11567,11 @@ fn bindgen_test_layout_attribute() {
             stringify!(mode)
         )
     );
+}
+impl Default for attribute {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[doc = " struct attribute_group - data structure used to declare an attribute group."]
 #[doc = " @name:\tOptional: Attribute group name"]
@@ -11172,6 +11673,11 @@ fn bindgen_test_layout_attribute_group() {
             stringify!(bin_attrs)
         )
     );
+}
+impl Default for attribute_group {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -11281,8 +11787,13 @@ fn bindgen_test_layout_bin_attribute() {
         )
     );
 }
+impl Default for bin_attribute {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct sysfs_ops {
     pub show: ::core::option::Option<
         unsafe extern "C" fn(
@@ -11340,7 +11851,7 @@ fn bindgen_test_layout_sysfs_ops() {
 #[doc = " there. This avoids wrapping the counter and causing 'spurious'"]
 #[doc = " use-after-free bugs."]
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct refcount_struct {
     pub refs: atomic_t,
 }
@@ -11367,9 +11878,15 @@ fn bindgen_test_layout_refcount_struct() {
         )
     );
 }
+#[doc = " struct refcount_t - variant of atomic_t specialized for reference counts"]
+#[doc = " @refs: atomic_t counter field"]
+#[doc = ""]
+#[doc = " The counter saturates at UINT_MAX and will not move once"]
+#[doc = " there. This avoids wrapping the counter and causing 'spurious'"]
+#[doc = " use-after-free bugs."]
 pub type refcount_t = refcount_struct;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct kref {
     pub refcount: refcount_t,
 }
@@ -11491,6 +12008,11 @@ fn bindgen_test_layout_kobject() {
             stringify!(kref)
         )
     );
+}
+impl Default for kobject {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 impl kobject {
     #[inline]
@@ -11671,6 +12193,11 @@ fn bindgen_test_layout_kobj_type() {
         )
     );
 }
+impl Default for kobj_type {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct kobj_uevent_env {
     pub argv: [*mut cty::c_char; 3usize],
@@ -11742,8 +12269,13 @@ fn bindgen_test_layout_kobj_uevent_env() {
         )
     );
 }
+impl Default for kobj_uevent_env {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct kset_uevent_ops {
     pub filter: ::core::option::Option<
         unsafe extern "C" fn(kset: *mut kset, kobj: *mut kobject) -> cty::c_int,
@@ -11877,8 +12409,13 @@ fn bindgen_test_layout_kset() {
         )
     );
 }
+impl Default for kset {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct kernel_param_ops {
     pub flags: cty::c_uint,
     pub set: ::core::option::Option<
@@ -12002,6 +12539,11 @@ fn bindgen_test_layout_kernel_param__bindgen_ty_1() {
         )
     );
 }
+impl Default for kernel_param__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_kernel_param() {
     assert_eq!(
@@ -12075,6 +12617,11 @@ fn bindgen_test_layout_kernel_param() {
         )
     );
 }
+impl Default for kernel_param {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct kparam_string {
@@ -12113,6 +12660,11 @@ fn bindgen_test_layout_kparam_string() {
             stringify!(string)
         )
     );
+}
+impl Default for kparam_string {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -12186,6 +12738,11 @@ fn bindgen_test_layout_kparam_array() {
         )
     );
 }
+impl Default for kparam_array {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct latch_tree_node {
@@ -12214,8 +12771,13 @@ fn bindgen_test_layout_latch_tree_node() {
         )
     );
 }
+impl Default for latch_tree_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct error_injection_entry {
     pub addr: cty::c_ulong,
     pub etype: cty::c_int,
@@ -12305,6 +12867,11 @@ fn bindgen_test_layout_mod_arch_specific() {
         )
     );
 }
+impl Default for mod_arch_specific {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct module_kobject {
@@ -12376,6 +12943,11 @@ fn bindgen_test_layout_module_kobject() {
             stringify!(kobj_completion)
         )
     );
+}
+impl Default for module_kobject {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -12474,6 +13046,11 @@ fn bindgen_test_layout_module_attribute() {
         )
     );
 }
+impl Default for module_attribute {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub const module_state_MODULE_STATE_LIVE: module_state = 0;
 pub const module_state_MODULE_STATE_COMING: module_state = 1;
 pub const module_state_MODULE_STATE_GOING: module_state = 2;
@@ -12517,6 +13094,11 @@ fn bindgen_test_layout_mod_tree_node() {
             stringify!(node)
         )
     );
+}
+impl Default for mod_tree_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -12603,6 +13185,11 @@ fn bindgen_test_layout_module_layout() {
         )
     );
 }
+impl Default for module_layout {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct mod_kallsyms {
@@ -12653,6 +13240,11 @@ fn bindgen_test_layout_mod_kallsyms() {
         )
     );
 }
+impl Default for mod_kallsyms {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct hlist_bl_head {
@@ -12680,6 +13272,11 @@ fn bindgen_test_layout_hlist_bl_head() {
             stringify!(first)
         )
     );
+}
+impl Default for hlist_bl_head {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -12719,6 +13316,11 @@ fn bindgen_test_layout_hlist_bl_node() {
             stringify!(pprev)
         )
     );
+}
+impl Default for hlist_bl_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct lockref {
@@ -12777,6 +13379,11 @@ fn bindgen_test_layout_lockref__bindgen_ty_1__bindgen_ty_1() {
         )
     );
 }
+impl Default for lockref__bindgen_ty_1__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_lockref__bindgen_ty_1() {
     assert_eq!(
@@ -12802,6 +13409,11 @@ fn bindgen_test_layout_lockref__bindgen_ty_1() {
         )
     );
 }
+impl Default for lockref__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_lockref() {
     assert_eq!(
@@ -12814,6 +13426,11 @@ fn bindgen_test_layout_lockref() {
         8usize,
         concat!("Alignment of ", stringify!(lockref))
     );
+}
+impl Default for lockref {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -12832,7 +13449,7 @@ pub struct qstr__bindgen_ty_1 {
     pub bindgen_union_field: u64,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct qstr__bindgen_ty_1__bindgen_ty_1 {
     pub hash: u32,
     pub len: u32,
@@ -12900,6 +13517,11 @@ fn bindgen_test_layout_qstr__bindgen_ty_1() {
         )
     );
 }
+impl Default for qstr__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_qstr() {
     assert_eq!(
@@ -12922,6 +13544,11 @@ fn bindgen_test_layout_qstr() {
             stringify!(name)
         )
     );
+}
+impl Default for qstr {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct dentry {
@@ -12981,6 +13608,11 @@ fn bindgen_test_layout_dentry__bindgen_ty_1() {
         )
     );
 }
+impl Default for dentry__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct dentry__bindgen_ty_2 {
     pub d_alias: __BindgenUnionField<hlist_node>,
@@ -13032,6 +13664,11 @@ fn bindgen_test_layout_dentry__bindgen_ty_2() {
             stringify!(d_rcu)
         )
     );
+}
+impl Default for dentry__bindgen_ty_2 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_dentry() {
@@ -13195,6 +13832,11 @@ fn bindgen_test_layout_dentry() {
             stringify!(d_u)
         )
     );
+}
+impl Default for dentry {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[repr(align(64))]
@@ -13380,6 +14022,11 @@ fn bindgen_test_layout_dentry_operations() {
         )
     );
 }
+impl Default for dentry_operations {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 extern "C" {
     pub fn d_instantiate(arg1: *mut dentry, arg2: *mut inode);
 }
@@ -13419,6 +14066,11 @@ fn bindgen_test_layout_path() {
             stringify!(dentry)
         )
     );
+}
+impl Default for path {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -13491,6 +14143,11 @@ fn bindgen_test_layout_shrink_control() {
             stringify!(memcg)
         )
     );
+}
+impl Default for shrink_control {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -13601,6 +14258,11 @@ fn bindgen_test_layout_shrinker() {
         )
     );
 }
+impl Default for shrinker {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct list_lru_one {
@@ -13640,6 +14302,11 @@ fn bindgen_test_layout_list_lru_one() {
         )
     );
 }
+impl Default for list_lru_one {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct list_lru_memcg {
@@ -13678,6 +14345,11 @@ fn bindgen_test_layout_list_lru_memcg() {
             stringify!(lru)
         )
     );
+}
+impl Default for list_lru_memcg {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[repr(align(64))]
@@ -13740,6 +14412,11 @@ fn bindgen_test_layout_list_lru_node() {
         )
     );
 }
+impl Default for list_lru_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct list_lru {
@@ -13801,6 +14478,11 @@ fn bindgen_test_layout_list_lru() {
         )
     );
 }
+impl Default for list_lru {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub const pid_type_PIDTYPE_PID: pid_type = 0;
 pub const pid_type_PIDTYPE_TGID: pid_type = 1;
 pub const pid_type_PIDTYPE_PGID: pid_type = 2;
@@ -13835,6 +14517,11 @@ fn bindgen_test_layout_upid() {
         8usize,
         concat!("Offset of field: ", stringify!(upid), "::", stringify!(ns))
     );
+}
+impl Default for upid {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -13903,13 +14590,18 @@ fn bindgen_test_layout_pid() {
         )
     );
 }
+impl Default for pid {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct pid_namespace {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct kernel_cap_struct {
     pub cap: [__u32; 2usize],
 }
@@ -13938,7 +14630,7 @@ fn bindgen_test_layout_kernel_cap_struct() {
 }
 pub type kernel_cap_t = kernel_cap_struct;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct fiemap_extent {
     pub fe_logical: __u64,
     pub fe_physical: __u64,
@@ -14053,6 +14745,11 @@ fn bindgen_test_layout_rcuwait() {
         )
     );
 }
+impl Default for rcuwait {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub const rcu_sync_type_RCU_SYNC: rcu_sync_type = 0;
 pub const rcu_sync_type_RCU_SCHED_SYNC: rcu_sync_type = 1;
 pub const rcu_sync_type_RCU_BH_SYNC: rcu_sync_type = 2;
@@ -14139,6 +14836,11 @@ fn bindgen_test_layout_rcu_sync() {
         )
     );
 }
+impl Default for rcu_sync {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct percpu_rw_semaphore {
     pub rss: rcu_sync,
@@ -14212,6 +14914,11 @@ fn bindgen_test_layout_percpu_rw_semaphore() {
         )
     );
 }
+impl Default for percpu_rw_semaphore {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct delayed_call {
@@ -14251,8 +14958,13 @@ fn bindgen_test_layout_delayed_call() {
         )
     );
 }
+impl Default for delayed_call {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct uuid_t {
     pub b: [__u8; 16usize],
 }
@@ -14308,6 +15020,11 @@ fn bindgen_test_layout_sysv_sem() {
         )
     );
 }
+impl Default for sysv_sem {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct sysv_shm {
@@ -14335,6 +15052,11 @@ fn bindgen_test_layout_sysv_shm() {
             stringify!(shm_clist)
         )
     );
+}
+impl Default for sysv_shm {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -14386,6 +15108,11 @@ fn bindgen_test_layout_plist_node() {
         )
     );
 }
+impl Default for plist_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct timerqueue_node {
@@ -14425,6 +15152,11 @@ fn bindgen_test_layout_timerqueue_node() {
         )
     );
 }
+impl Default for timerqueue_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct timerqueue_head {
@@ -14463,6 +15195,11 @@ fn bindgen_test_layout_timerqueue_head() {
             stringify!(next)
         )
     );
+}
+impl Default for timerqueue_head {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 pub const hrtimer_restart_HRTIMER_NORESTART: hrtimer_restart = 0;
 pub const hrtimer_restart_HRTIMER_RESTART: hrtimer_restart = 1;
@@ -14579,6 +15316,11 @@ fn bindgen_test_layout_hrtimer() {
         )
     );
 }
+impl Default for hrtimer {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[doc = " struct hrtimer_clock_base - the timer base for a specific clock"]
 #[doc = " @cpu_base:\t\tper cpu clock base"]
 #[doc = " @index:\t\tclock type index for per_cpu support when moving a"]
@@ -14693,6 +15435,11 @@ fn bindgen_test_layout_hrtimer_clock_base() {
             stringify!(offset)
         )
     );
+}
+impl Default for hrtimer_clock_base {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[doc = " struct hrtimer_cpu_base - the per cpu clock bases"]
 #[doc = " @lock:\t\tlock protecting the base and associated clock bases"]
@@ -14887,6 +15634,11 @@ fn bindgen_test_layout_hrtimer_cpu_base() {
         )
     );
 }
+impl Default for hrtimer_cpu_base {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 impl hrtimer_cpu_base {
     #[inline]
     pub fn hres_active(&self) -> cty::c_uint {
@@ -15013,8 +15765,13 @@ fn bindgen_test_layout_seccomp() {
         )
     );
 }
+impl Default for seccomp {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct sigset_t {
     pub sig: [cty::c_ulong; 1usize],
 }
@@ -15080,6 +15837,11 @@ fn bindgen_test_layout_sigval() {
         )
     );
 }
+impl Default for sigval {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type sigval_t = sigval;
 #[repr(C)]
 pub struct siginfo {
@@ -15101,7 +15863,7 @@ pub struct siginfo__bindgen_ty_1 {
     pub bindgen_union_field: [u64; 14usize],
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct siginfo__bindgen_ty_1__bindgen_ty_1 {
     pub _pid: __kernel_pid_t,
     pub _uid: __kernel_uid32_t,
@@ -15223,6 +15985,11 @@ fn bindgen_test_layout_siginfo__bindgen_ty_1__bindgen_ty_2() {
         )
     );
 }
+impl Default for siginfo__bindgen_ty_1__bindgen_ty_2 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct siginfo__bindgen_ty_1__bindgen_ty_3 {
     pub _pid: __kernel_pid_t,
@@ -15284,8 +16051,13 @@ fn bindgen_test_layout_siginfo__bindgen_ty_1__bindgen_ty_3() {
         )
     );
 }
+impl Default for siginfo__bindgen_ty_1__bindgen_ty_3 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct siginfo__bindgen_ty_1__bindgen_ty_4 {
     pub _pid: __kernel_pid_t,
     pub _uid: __kernel_uid32_t,
@@ -15450,8 +16222,13 @@ fn bindgen_test_layout_siginfo__bindgen_ty_1__bindgen_ty_5__bindgen_ty_1__bindge
         )
     );
 }
+impl Default for siginfo__bindgen_ty_1__bindgen_ty_5__bindgen_ty_1__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct siginfo__bindgen_ty_1__bindgen_ty_5__bindgen_ty_1__bindgen_ty_2 {
     pub _dummy_pkey: [cty::c_char; 8usize],
     pub _pkey: __u32,
@@ -15557,6 +16334,11 @@ fn bindgen_test_layout_siginfo__bindgen_ty_1__bindgen_ty_5__bindgen_ty_1() {
         )
     );
 }
+impl Default for siginfo__bindgen_ty_1__bindgen_ty_5__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_siginfo__bindgen_ty_1__bindgen_ty_5() {
     assert_eq!(
@@ -15586,8 +16368,13 @@ fn bindgen_test_layout_siginfo__bindgen_ty_1__bindgen_ty_5() {
         )
     );
 }
+impl Default for siginfo__bindgen_ty_1__bindgen_ty_5 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct siginfo__bindgen_ty_1__bindgen_ty_6 {
     pub _band: cty::c_long,
     pub _fd: cty::c_int,
@@ -15696,6 +16483,11 @@ fn bindgen_test_layout_siginfo__bindgen_ty_1__bindgen_ty_7() {
         )
     );
 }
+impl Default for siginfo__bindgen_ty_1__bindgen_ty_7 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_siginfo__bindgen_ty_1() {
     assert_eq!(
@@ -15791,6 +16583,11 @@ fn bindgen_test_layout_siginfo__bindgen_ty_1() {
         )
     );
 }
+impl Default for siginfo__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_siginfo() {
     assert_eq!(
@@ -15844,6 +16641,11 @@ fn bindgen_test_layout_siginfo() {
         )
     );
 }
+impl Default for siginfo {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type siginfo_t = siginfo;
 #[repr(C)]
 #[derive(Debug)]
@@ -15884,8 +16686,13 @@ fn bindgen_test_layout_sigpending() {
         )
     );
 }
+impl Default for sigpending {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct task_io_accounting {
     pub rchar: u64,
     pub wchar: u64,
@@ -16028,6 +16835,11 @@ fn bindgen_test_layout_rseq__bindgen_ty_1() {
         )
     );
 }
+impl Default for rseq__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_rseq() {
     assert_eq!(
@@ -16080,6 +16892,11 @@ fn bindgen_test_layout_rseq() {
             stringify!(flags)
         )
     );
+}
+impl Default for rseq {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -16202,6 +17019,11 @@ fn bindgen_test_layout_prev_cputime() {
         )
     );
 }
+impl Default for prev_cputime {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[doc = " struct task_cputime - collected CPU time counts"]
 #[doc = " @utime:\t\ttime spent in user mode, in nanoseconds"]
 #[doc = " @stime:\t\ttime spent in kernel mode, in nanoseconds"]
@@ -16211,7 +17033,7 @@ fn bindgen_test_layout_prev_cputime() {
 #[doc = " threads and thread groups.  Most things considering CPU time want to group"]
 #[doc = " these counts together and treat all three of them in parallel."]
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct task_cputime {
     pub utime: u64,
     pub stime: u64,
@@ -16261,7 +17083,7 @@ fn bindgen_test_layout_task_cputime() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct sched_info {
     pub pcount: cty::c_ulong,
     pub run_delay: cty::c_ulonglong,
@@ -16322,7 +17144,7 @@ fn bindgen_test_layout_sched_info() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct load_weight {
     pub weight: cty::c_ulong,
     pub inv_weight: u32,
@@ -16382,7 +17204,7 @@ fn bindgen_test_layout_load_weight() {
 #[doc = " of an otherwise almost periodic task."]
 #[repr(C)]
 #[repr(align(8))]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct util_est {
     pub enqueued: cty::c_uint,
     pub ewma: cty::c_uint,
@@ -16536,8 +17358,13 @@ fn bindgen_test_layout_sched_avg() {
         )
     );
 }
+impl Default for sched_avg {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct sched_statistics {
     pub wait_start: u64,
     pub wait_max: u64,
@@ -17078,6 +17905,11 @@ fn bindgen_test_layout_sched_entity() {
         )
     );
 }
+impl Default for sched_entity {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct sched_rt_entity {
@@ -17204,6 +18036,11 @@ fn bindgen_test_layout_sched_rt_entity() {
             stringify!(my_q)
         )
     );
+}
+impl Default for sched_rt_entity {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -17344,6 +18181,11 @@ fn bindgen_test_layout_sched_dl_entity() {
         )
     );
 }
+impl Default for sched_dl_entity {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 impl sched_dl_entity {
     #[inline]
     pub fn dl_throttled(&self) -> cty::c_uint {
@@ -17460,6 +18302,11 @@ fn bindgen_test_layout_wake_q_node() {
             stringify!(next)
         )
     );
+}
+impl Default for wake_q_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[repr(align(64))]
@@ -19285,6 +20132,11 @@ fn bindgen_test_layout_task_struct() {
         )
     );
 }
+impl Default for task_struct {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 impl task_struct {
     #[inline]
     pub fn sched_reset_on_fork(&self) -> cty::c_uint {
@@ -19521,6 +20373,11 @@ fn bindgen_test_layout_io_cq__bindgen_ty_1() {
         )
     );
 }
+impl Default for io_cq__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct io_cq__bindgen_ty_2 {
     pub ioc_node: __BindgenUnionField<hlist_node>,
@@ -19560,6 +20417,11 @@ fn bindgen_test_layout_io_cq__bindgen_ty_2() {
         )
     );
 }
+impl Default for io_cq__bindgen_ty_2 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_io_cq() {
     assert_eq!(
@@ -19597,6 +20459,11 @@ fn bindgen_test_layout_io_cq() {
             stringify!(flags)
         )
     );
+}
+impl Default for io_cq {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct io_context {
@@ -19734,6 +20601,11 @@ fn bindgen_test_layout_io_context() {
             stringify!(release_work)
         )
     );
+}
+impl Default for io_context {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -19881,6 +20753,11 @@ fn bindgen_test_layout_iattr() {
         )
     );
 }
+impl Default for iattr {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct percpu_counter {
     pub lock: raw_spinlock_t,
@@ -19941,9 +20818,14 @@ fn bindgen_test_layout_percpu_counter() {
         )
     );
 }
+impl Default for percpu_counter {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type projid_t = __kernel_uid32_t;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct kprojid_t {
     pub val: projid_t,
 }
@@ -20030,6 +20912,11 @@ fn bindgen_test_layout_kqid__bindgen_ty_1() {
         )
     );
 }
+impl Default for kqid__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_kqid() {
     assert_eq!(
@@ -20053,8 +20940,13 @@ fn bindgen_test_layout_kqid() {
         )
     );
 }
+impl Default for kqid {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct mem_dqblk {
     pub dqb_bhardlimit: qsize_t,
     pub dqb_bsoftlimit: qsize_t,
@@ -20285,6 +21177,11 @@ fn bindgen_test_layout_mem_dqinfo() {
         )
     );
 }
+impl Default for mem_dqinfo {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct dquot {
     pub dq_hash: hlist_node,
@@ -20433,8 +21330,13 @@ fn bindgen_test_layout_dquot() {
         )
     );
 }
+impl Default for dquot {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct quota_format_ops {
     pub check_quota_file: ::core::option::Option<
         unsafe extern "C" fn(sb: *mut super_block, type_: cty::c_int) -> cty::c_int,
@@ -20558,7 +21460,7 @@ fn bindgen_test_layout_quota_format_ops() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct dquot_operations {
     pub write_dquot: ::core::option::Option<unsafe extern "C" fn(arg1: *mut dquot) -> cty::c_int>,
     pub alloc_dquot: ::core::option::Option<
@@ -20711,7 +21613,7 @@ fn bindgen_test_layout_dquot_operations() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct qc_dqblk {
     pub d_fieldmask: cty::c_int,
     pub d_spc_hardlimit: u64,
@@ -20904,7 +21806,7 @@ fn bindgen_test_layout_qc_dqblk() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct qc_type_state {
     pub flags: cty::c_uint,
     pub spc_timelimit: cty::c_uint,
@@ -21031,7 +21933,7 @@ fn bindgen_test_layout_qc_type_state() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct qc_state {
     pub s_incoredqs: cty::c_uint,
     pub s_state: [qc_type_state; 3usize],
@@ -21070,7 +21972,7 @@ fn bindgen_test_layout_qc_state() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct qc_info {
     pub i_fieldmask: cty::c_int,
     pub i_flags: cty::c_uint,
@@ -21175,7 +22077,7 @@ fn bindgen_test_layout_qc_info() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct quotactl_ops {
     pub quota_on: ::core::option::Option<
         unsafe extern "C" fn(
@@ -21408,6 +22310,11 @@ fn bindgen_test_layout_quota_format_type() {
         )
     );
 }
+impl Default for quota_format_type {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct quota_info {
     pub flags: cty::c_uint,
@@ -21478,6 +22385,11 @@ fn bindgen_test_layout_quota_info() {
             stringify!(ops)
         )
     );
+}
+impl Default for quota_info {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 pub const rw_hint_WRITE_LIFE_NOT_SET: rw_hint = 0;
 pub const rw_hint_WRITE_LIFE_NONE: rw_hint = 1;
@@ -21582,8 +22494,13 @@ fn bindgen_test_layout_kiocb() {
         )
     );
 }
+impl Default for kiocb {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct address_space_operations {
     pub writepage: ::core::option::Option<
         unsafe extern "C" fn(page: *mut page, wbc: *mut writeback_control) -> cty::c_int,
@@ -22118,6 +23035,11 @@ fn bindgen_test_layout_address_space() {
         )
     );
 }
+impl Default for address_space {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct block_device {
     pub bd_dev: dev_t,
@@ -22387,6 +23309,11 @@ fn bindgen_test_layout_block_device() {
         )
     );
 }
+impl Default for block_device {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct posix_acl {
@@ -22489,6 +23416,11 @@ fn bindgen_test_layout_inode__bindgen_ty_1() {
         )
     );
 }
+impl Default for inode__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct inode__bindgen_ty_2 {
     pub i_dentry: __BindgenUnionField<hlist_head>,
@@ -22527,6 +23459,11 @@ fn bindgen_test_layout_inode__bindgen_ty_2() {
             stringify!(i_rcu)
         )
     );
+}
+impl Default for inode__bindgen_ty_2 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct inode__bindgen_ty_3 {
@@ -22599,6 +23536,11 @@ fn bindgen_test_layout_inode__bindgen_ty_3() {
             stringify!(i_dir_seq)
         )
     );
+}
+impl Default for inode__bindgen_ty_3 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_inode() {
@@ -23083,6 +24025,11 @@ fn bindgen_test_layout_inode() {
         )
     );
 }
+impl Default for inode {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct fown_struct {
     pub lock: rwlock_t,
@@ -23165,8 +24112,13 @@ fn bindgen_test_layout_fown_struct() {
         )
     );
 }
+impl Default for fown_struct {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct file_ra_state {
     pub start: cty::c_ulong,
     pub size: cty::c_uint,
@@ -23310,6 +24262,11 @@ fn bindgen_test_layout_file__bindgen_ty_1() {
             stringify!(fu_rcuhead)
         )
     );
+}
+impl Default for file__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_file() {
@@ -23529,9 +24486,14 @@ fn bindgen_test_layout_file() {
         )
     );
 }
+impl Default for file {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type fl_owner_t = *mut cty::c_void;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct file_lock_operations {
     pub fl_copy_lock:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut file_lock, arg2: *mut file_lock)>,
@@ -23576,7 +24538,7 @@ fn bindgen_test_layout_file_lock_operations() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct lock_manager_operations {
     pub lm_compare_owner: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut file_lock, arg2: *mut file_lock) -> cty::c_int,
@@ -23783,6 +24745,11 @@ fn bindgen_test_layout_nfs_lock_info() {
         )
     );
 }
+impl Default for nfs_lock_info {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct nfs4_lock_state {
@@ -23815,6 +24782,11 @@ fn bindgen_test_layout_nfs4_lock_info() {
             stringify!(owner)
         )
     );
+}
+impl Default for nfs4_lock_info {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct file_lock {
@@ -23896,6 +24868,11 @@ fn bindgen_test_layout_file_lock__bindgen_ty_1__bindgen_ty_1() {
         )
     );
 }
+impl Default for file_lock__bindgen_ty_1__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_file_lock__bindgen_ty_1() {
     assert_eq!(
@@ -23940,6 +24917,11 @@ fn bindgen_test_layout_file_lock__bindgen_ty_1() {
             stringify!(afs)
         )
     );
+}
+impl Default for file_lock__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_file_lock() {
@@ -24144,6 +25126,11 @@ fn bindgen_test_layout_file_lock() {
         )
     );
 }
+impl Default for file_lock {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct file_lock_context {
     pub flc_lock: spinlock_t,
@@ -24203,6 +25190,11 @@ fn bindgen_test_layout_file_lock_context() {
             stringify!(flc_lease)
         )
     );
+}
+impl Default for file_lock_context {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -24291,6 +25283,11 @@ fn bindgen_test_layout_fasync_struct() {
         )
     );
 }
+impl Default for fasync_struct {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct sb_writers {
     pub frozen: cty::c_int,
@@ -24339,6 +25336,11 @@ fn bindgen_test_layout_sb_writers() {
             stringify!(rw_sem)
         )
     );
+}
+impl Default for sb_writers {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[repr(align(64))]
@@ -24968,6 +25970,11 @@ fn bindgen_test_layout_super_block() {
         )
     );
 }
+impl Default for super_block {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 extern "C" {
     pub fn current_time(inode: *mut inode) -> timespec64;
 }
@@ -25041,6 +26048,11 @@ fn bindgen_test_layout_fiemap_extent_info() {
         )
     );
 }
+impl Default for fiemap_extent_info {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type filldir_t = ::core::option::Option<
     unsafe extern "C" fn(
         arg1: *mut dir_context,
@@ -25052,7 +26064,7 @@ pub type filldir_t = ::core::option::Option<
     ) -> cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct dir_context {
     pub actor: filldir_t,
     pub pos: loff_t,
@@ -25092,6 +26104,7 @@ fn bindgen_test_layout_dir_context() {
 }
 #[repr(C)]
 #[repr(align(64))]
+#[derive(PartialEq)]
 pub struct inode_operations {
     pub lookup: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut inode, arg2: *mut dentry, arg3: cty::c_uint) -> *mut dentry,
@@ -25432,8 +26445,13 @@ fn bindgen_test_layout_inode_operations() {
         )
     );
 }
+impl Default for inode_operations {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct super_operations {
     pub alloc_inode:
         ::core::option::Option<unsafe extern "C" fn(sb: *mut super_block) -> *mut inode>,
@@ -25964,6 +26982,11 @@ fn bindgen_test_layout_file_system_type() {
         )
     );
 }
+impl Default for file_system_type {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 extern "C" {
     pub fn mount_nodev(
         fs_type: *mut file_system_type,
@@ -26040,6 +27063,9 @@ extern "C" {
     ) -> cty::c_int;
 }
 extern "C" {
+    pub static page_symlink_inode_operations: inode_operations;
+}
+extern "C" {
     pub fn simple_setattr(arg1: *mut dentry, arg2: *mut iattr) -> cty::c_int;
 }
 extern "C" {
@@ -26101,6 +27127,9 @@ extern "C" {
 }
 extern "C" {
     pub fn simple_lookup(arg1: *mut inode, arg2: *mut dentry, flags: cty::c_uint) -> *mut dentry;
+}
+extern "C" {
+    pub static simple_dir_operations: file_operations;
 }
 extern "C" {
     pub fn inode_nohighmem(inode: *mut inode);
@@ -26178,6 +27207,11 @@ fn bindgen_test_layout_percpu_ref() {
             stringify!(rcu)
         )
     );
+}
+impl Default for percpu_ref {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 impl percpu_ref {
     #[inline]
@@ -26307,6 +27341,11 @@ fn bindgen_test_layout_resource() {
         )
     );
 }
+impl Default for resource {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[doc = " struct vmem_altmap - pre-allocated storage for vmemmap_populate"]
 #[doc = " @base_pfn: base of the entire dev_pagemap mapping"]
 #[doc = " @reserve: pages mapped, but reserved for driver use (relative to @base)"]
@@ -26314,7 +27353,7 @@ fn bindgen_test_layout_resource() {
 #[doc = " @align: pages reserved to meet allocation alignments"]
 #[doc = " @alloc: track pages consumed, private to vmemmap_populate()"]
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct vmem_altmap {
     pub base_pfn: cty::c_ulong,
     pub reserve: cty::c_ulong,
@@ -26537,6 +27576,11 @@ fn bindgen_test_layout_dev_pagemap() {
         )
     );
 }
+impl Default for dev_pagemap {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct anon_vma {
@@ -26713,12 +27757,17 @@ fn bindgen_test_layout_vm_fault() {
         )
     );
 }
+impl Default for vm_fault {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub const page_entry_size_PE_SIZE_PTE: page_entry_size = 0;
 pub const page_entry_size_PE_SIZE_PMD: page_entry_size = 1;
 pub const page_entry_size_PE_SIZE_PUD: page_entry_size = 2;
 pub type page_entry_size = u32;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct vm_operations_struct {
     pub open: ::core::option::Option<unsafe extern "C" fn(area: *mut vm_area_struct)>,
     pub close: ::core::option::Option<unsafe extern "C" fn(area: *mut vm_area_struct)>,
@@ -26914,7 +27963,7 @@ extern "C" {
     pub fn __set_page_dirty_nobuffers(page: *mut page) -> cty::c_int;
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct exception_table_entry {
     pub insn: cty::c_int,
     pub fixup: cty::c_int,
@@ -27021,8 +28070,13 @@ fn bindgen_test_layout_bio_vec() {
         )
     );
 }
+impl Default for bio_vec {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct bvec_iter {
     pub bi_sector: sector_t,
     pub bi_size: cty::c_uint,
@@ -27096,7 +28150,7 @@ fn bindgen_test_layout_bvec_iter() {
 pub type bio_end_io_t = ::core::option::Option<unsafe extern "C" fn(arg1: *mut bio)>;
 pub type blk_status_t = u8;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct bio_issue {
     pub value: u64,
 }
@@ -27168,6 +28222,11 @@ fn bindgen_test_layout_bio__bindgen_ty_1() {
         1usize,
         concat!("Alignment of ", stringify!(bio__bindgen_ty_1))
     );
+}
+impl Default for bio__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_bio() {
@@ -27432,9 +28491,14 @@ fn bindgen_test_layout_bio() {
         )
     );
 }
+impl Default for bio {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type blk_qc_t = cty::c_uint;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct blk_rq_stat {
     pub mean: u64,
     pub min: u64,
@@ -27596,6 +28660,11 @@ fn bindgen_test_layout_device_type() {
             stringify!(pm)
         )
     );
+}
+impl Default for device_type {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[doc = " struct class - device classes"]
 #[doc = " @name:\tName of the class."]
@@ -27803,6 +28872,11 @@ fn bindgen_test_layout_class() {
         concat!("Offset of field: ", stringify!(class), "::", stringify!(p))
     );
 }
+impl Default for class {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct klist_node {
@@ -27853,8 +28927,13 @@ fn bindgen_test_layout_klist_node() {
         )
     );
 }
+impl Default for klist_node {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct pm_message {
     pub event: cty::c_int,
 }
@@ -28105,7 +29184,7 @@ pub type pm_message_t = pm_message;
 #[doc = " role of the @runtime_suspend(), @runtime_resume() and @runtime_idle()"]
 #[doc = " callbacks in device runtime power management."]
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct dev_pm_ops {
     pub prepare: ::core::option::Option<unsafe extern "C" fn(dev: *mut device) -> cty::c_int>,
     pub complete: ::core::option::Option<unsafe extern "C" fn(dev: *mut device)>,
@@ -28415,6 +29494,11 @@ fn bindgen_test_layout_pm_subsys_data() {
         )
     );
 }
+impl Default for pm_subsys_data {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct dev_pm_info {
     pub power_state: pm_message_t,
@@ -28501,6 +29585,11 @@ fn bindgen_test_layout_dev_pm_info() {
             stringify!(qos)
         )
     );
+}
+impl Default for dev_pm_info {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 impl dev_pm_info {
     #[inline]
@@ -28688,7 +29777,7 @@ impl dev_pm_info {
 #[doc = " hibernation, system resume and during runtime PM transitions instead of"]
 #[doc = " subsystem-level and driver-level callbacks."]
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct dev_pm_domain {
     pub ops: dev_pm_ops,
     pub detach: ::core::option::Option<unsafe extern "C" fn(dev: *mut device, power_off: bool_)>,
@@ -28852,6 +29941,11 @@ fn bindgen_test_layout_ratelimit_state() {
         )
     );
 }
+impl Default for ratelimit_state {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct dev_archdata {
@@ -28879,6 +29973,11 @@ fn bindgen_test_layout_dev_archdata() {
             stringify!(iommu)
         )
     );
+}
+impl Default for dev_archdata {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -29229,6 +30328,11 @@ fn bindgen_test_layout_bus_type() {
         )
     );
 }
+impl Default for bus_type {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub const probe_type_PROBE_DEFAULT_STRATEGY: probe_type = 0;
 pub const probe_type_PROBE_PREFER_ASYNCHRONOUS: probe_type = 1;
 pub const probe_type_PROBE_FORCE_SYNCHRONOUS: probe_type = 2;
@@ -29495,8 +30599,13 @@ fn bindgen_test_layout_device_driver() {
         )
     );
 }
+impl Default for device_driver {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct device_dma_parameters {
     pub max_segment_size: cty::c_uint,
     pub segment_boundary_mask: cty::c_ulong,
@@ -29602,6 +30711,11 @@ fn bindgen_test_layout_dev_links_info() {
             stringify!(status)
         )
     );
+}
+impl Default for dev_links_info {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[doc = " struct device - The basic device structure"]
 #[doc = " @parent:\tThe device's \"parent\" device, the device to which it is attached."]
@@ -30088,6 +31202,11 @@ fn bindgen_test_layout_device() {
         )
     );
 }
+impl Default for device {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 impl device {
     #[inline]
     pub fn offline_disabled(&self) -> bool_ {
@@ -30146,7 +31265,7 @@ impl device {
     }
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct disk_stats {
     pub nsecs: [u64; 3usize],
     pub sectors: [cty::c_ulong; 3usize],
@@ -30265,6 +31384,11 @@ fn bindgen_test_layout_partition_meta_info() {
             stringify!(volname)
         )
     );
+}
+impl Default for partition_meta_info {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct hd_struct {
@@ -30447,6 +31571,11 @@ fn bindgen_test_layout_hd_struct() {
         )
     );
 }
+impl Default for hd_struct {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct disk_part_tbl {
@@ -30507,6 +31636,11 @@ fn bindgen_test_layout_disk_part_tbl() {
             stringify!(part)
         )
     );
+}
+impl Default for disk_part_tbl {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -30767,6 +31901,11 @@ fn bindgen_test_layout_gendisk() {
         )
     );
 }
+impl Default for gendisk {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct fprop_local_percpu {
     pub events: percpu_counter,
@@ -30815,6 +31954,11 @@ fn bindgen_test_layout_fprop_local_percpu() {
             stringify!(lock)
         )
     );
+}
+impl Default for fprop_local_percpu {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 pub type congested_fn = ::core::option::Option<
     unsafe extern "C" fn(arg1: *mut cty::c_void, arg2: cty::c_int) -> cty::c_int,
@@ -30905,6 +32049,11 @@ fn bindgen_test_layout_bdi_writeback_congested() {
         )
     );
 }
+impl Default for bdi_writeback_congested {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct bdi_writeback {
     pub bdi: *mut backing_dev_info,
@@ -30983,6 +32132,11 @@ fn bindgen_test_layout_bdi_writeback__bindgen_ty_1() {
             stringify!(rcu)
         )
     );
+}
+impl Default for bdi_writeback__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_bdi_writeback() {
@@ -31313,6 +32467,11 @@ fn bindgen_test_layout_bdi_writeback() {
         )
     );
 }
+impl Default for bdi_writeback {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct backing_dev_info {
     pub bdi_list: list_head,
@@ -31605,6 +32764,11 @@ fn bindgen_test_layout_backing_dev_info() {
         )
     );
 }
+impl Default for backing_dev_info {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type mempool_alloc_t = ::core::option::Option<
     unsafe extern "C" fn(gfp_mask: gfp_t, pool_data: *mut cty::c_void) -> *mut cty::c_void,
 >;
@@ -31715,6 +32879,11 @@ fn bindgen_test_layout_mempool_s() {
         )
     );
 }
+impl Default for mempool_s {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type mempool_t = mempool_s;
 #[repr(C)]
 pub struct bio_set {
@@ -31820,6 +32989,11 @@ fn bindgen_test_layout_bio_set() {
         )
     );
 }
+impl Default for bio_set {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct bio_list {
@@ -31859,8 +33033,13 @@ fn bindgen_test_layout_bio_list() {
         )
     );
 }
+impl Default for bio_list {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct sg_io_v4 {
     pub guard: __s32,
     pub protocol: __u32,
@@ -32240,7 +33419,7 @@ fn bindgen_test_layout_sg_io_v4() {
     );
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct bsg_ops {
     pub check_proto: ::core::option::Option<unsafe extern "C" fn(hdr: *mut sg_io_v4) -> cty::c_int>,
     pub fill_hdr: ::core::option::Option<
@@ -32364,6 +33543,11 @@ fn bindgen_test_layout_bsg_class_device() {
             stringify!(ops)
         )
     );
+}
+impl Default for bsg_class_device {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -32490,6 +33674,11 @@ fn bindgen_test_layout_request_list() {
         )
     );
 }
+impl Default for request_list {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type req_flags_t = __u32;
 pub const mq_rq_state_MQ_RQ_IDLE: mq_rq_state = 0;
 pub const mq_rq_state_MQ_RQ_IN_FLIGHT: mq_rq_state = 1;
@@ -32571,6 +33760,11 @@ fn bindgen_test_layout_request__bindgen_ty_1() {
         )
     );
 }
+impl Default for request__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct request__bindgen_ty_2 {
     pub rb_node: __BindgenUnionField<rb_node>,
@@ -32638,6 +33832,11 @@ fn bindgen_test_layout_request__bindgen_ty_2() {
         )
     );
 }
+impl Default for request__bindgen_ty_2 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct request__bindgen_ty_3 {
     pub elv: __BindgenUnionField<request__bindgen_ty_3__bindgen_ty_1>,
@@ -32691,6 +33890,11 @@ fn bindgen_test_layout_request__bindgen_ty_3__bindgen_ty_1() {
             stringify!(priv_)
         )
     );
+}
+impl Default for request__bindgen_ty_3__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -32754,6 +33958,11 @@ fn bindgen_test_layout_request__bindgen_ty_3__bindgen_ty_2() {
         )
     );
 }
+impl Default for request__bindgen_ty_3__bindgen_ty_2 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_request__bindgen_ty_3() {
     assert_eq!(
@@ -32786,6 +33995,11 @@ fn bindgen_test_layout_request__bindgen_ty_3() {
             stringify!(flush)
         )
     );
+}
+impl Default for request__bindgen_ty_3 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct request__bindgen_ty_4 {
@@ -32827,6 +34041,11 @@ fn bindgen_test_layout_request__bindgen_ty_4() {
             stringify!(fifo_time)
         )
     );
+}
+impl Default for request__bindgen_ty_4 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_request() {
@@ -33141,6 +34360,11 @@ fn bindgen_test_layout_request() {
         )
     );
 }
+impl Default for request {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub const elv_merge_ELEVATOR_NO_MERGE: elv_merge = 0;
 pub const elv_merge_ELEVATOR_FRONT_MERGE: elv_merge = 1;
 pub const elv_merge_ELEVATOR_BACK_MERGE: elv_merge = 2;
@@ -33211,7 +34435,7 @@ pub type elevator_exit_fn = ::core::option::Option<unsafe extern "C" fn(arg1: *m
 pub type elevator_registered_fn =
     ::core::option::Option<unsafe extern "C" fn(arg1: *mut request_queue)>;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct elevator_ops {
     pub elevator_merge_fn: elevator_merge_fn,
     pub elevator_merged_fn: elevator_merged_fn,
@@ -33508,7 +34732,7 @@ pub struct blk_mq_hw_ctx {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct elevator_mq_ops {
     pub init_sched: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut request_queue, arg2: *mut elevator_type) -> cty::c_int,
@@ -33878,6 +35102,11 @@ fn bindgen_test_layout_elv_fs_entry() {
         )
     );
 }
+impl Default for elv_fs_entry {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct elevator_type {
     pub icq_cache: *mut kmem_cache,
@@ -33930,6 +35159,11 @@ fn bindgen_test_layout_elevator_type__bindgen_ty_1() {
             stringify!(mq)
         )
     );
+}
+impl Default for elevator_type__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_elevator_type() {
@@ -34054,6 +35288,11 @@ fn bindgen_test_layout_elevator_type() {
         )
     );
 }
+impl Default for elevator_type {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct elevator_queue {
     pub type_: *mut elevator_type,
@@ -34125,6 +35364,11 @@ fn bindgen_test_layout_elevator_queue() {
             stringify!(hash)
         )
     );
+}
+impl Default for elevator_queue {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 impl elevator_queue {
     #[inline]
@@ -34288,6 +35532,11 @@ fn bindgen_test_layout_blk_queue_tag() {
         )
     );
 }
+impl Default for blk_queue_tag {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub const blk_zoned_model_BLK_ZONED_NONE: blk_zoned_model = 0;
 pub const blk_zoned_model_BLK_ZONED_HA: blk_zoned_model = 1;
 pub const blk_zoned_model_BLK_ZONED_HM: blk_zoned_model = 2;
@@ -34304,6 +35553,7 @@ pub struct queue_limits {
     pub max_sectors: cty::c_uint,
     pub max_segment_size: cty::c_uint,
     pub physical_block_size: cty::c_uint,
+    pub logical_block_size: cty::c_uint,
     pub alignment_offset: cty::c_uint,
     pub io_min: cty::c_uint,
     pub io_opt: cty::c_uint,
@@ -34313,7 +35563,6 @@ pub struct queue_limits {
     pub max_write_zeroes_sectors: cty::c_uint,
     pub discard_granularity: cty::c_uint,
     pub discard_alignment: cty::c_uint,
-    pub logical_block_size: cty::c_ushort,
     pub max_segments: cty::c_ushort,
     pub max_integrity_segments: cty::c_ushort,
     pub max_discard_segments: cty::c_ushort,
@@ -34430,8 +35679,20 @@ fn bindgen_test_layout_queue_limits() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<queue_limits>())).alignment_offset as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<queue_limits>())).logical_block_size as *const _ as usize
+        },
         48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(queue_limits),
+            "::",
+            stringify!(logical_block_size)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::core::ptr::null::<queue_limits>())).alignment_offset as *const _ as usize },
+        52usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34441,7 +35702,7 @@ fn bindgen_test_layout_queue_limits() {
     );
     assert_eq!(
         unsafe { &(*(::core::ptr::null::<queue_limits>())).io_min as *const _ as usize },
-        52usize,
+        56usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34451,7 +35712,7 @@ fn bindgen_test_layout_queue_limits() {
     );
     assert_eq!(
         unsafe { &(*(::core::ptr::null::<queue_limits>())).io_opt as *const _ as usize },
-        56usize,
+        60usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34463,7 +35724,7 @@ fn bindgen_test_layout_queue_limits() {
         unsafe {
             &(*(::core::ptr::null::<queue_limits>())).max_discard_sectors as *const _ as usize
         },
-        60usize,
+        64usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34475,7 +35736,7 @@ fn bindgen_test_layout_queue_limits() {
         unsafe {
             &(*(::core::ptr::null::<queue_limits>())).max_hw_discard_sectors as *const _ as usize
         },
-        64usize,
+        68usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34487,7 +35748,7 @@ fn bindgen_test_layout_queue_limits() {
         unsafe {
             &(*(::core::ptr::null::<queue_limits>())).max_write_same_sectors as *const _ as usize
         },
-        68usize,
+        72usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34499,7 +35760,7 @@ fn bindgen_test_layout_queue_limits() {
         unsafe {
             &(*(::core::ptr::null::<queue_limits>())).max_write_zeroes_sectors as *const _ as usize
         },
-        72usize,
+        76usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34511,7 +35772,7 @@ fn bindgen_test_layout_queue_limits() {
         unsafe {
             &(*(::core::ptr::null::<queue_limits>())).discard_granularity as *const _ as usize
         },
-        76usize,
+        80usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34521,7 +35782,7 @@ fn bindgen_test_layout_queue_limits() {
     );
     assert_eq!(
         unsafe { &(*(::core::ptr::null::<queue_limits>())).discard_alignment as *const _ as usize },
-        80usize,
+        84usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34530,20 +35791,8 @@ fn bindgen_test_layout_queue_limits() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::core::ptr::null::<queue_limits>())).logical_block_size as *const _ as usize
-        },
-        84usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(queue_limits),
-            "::",
-            stringify!(logical_block_size)
-        )
-    );
-    assert_eq!(
         unsafe { &(*(::core::ptr::null::<queue_limits>())).max_segments as *const _ as usize },
-        86usize,
+        88usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34555,7 +35804,7 @@ fn bindgen_test_layout_queue_limits() {
         unsafe {
             &(*(::core::ptr::null::<queue_limits>())).max_integrity_segments as *const _ as usize
         },
-        88usize,
+        90usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34567,7 +35816,7 @@ fn bindgen_test_layout_queue_limits() {
         unsafe {
             &(*(::core::ptr::null::<queue_limits>())).max_discard_segments as *const _ as usize
         },
-        90usize,
+        92usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34577,7 +35826,7 @@ fn bindgen_test_layout_queue_limits() {
     );
     assert_eq!(
         unsafe { &(*(::core::ptr::null::<queue_limits>())).misaligned as *const _ as usize },
-        92usize,
+        94usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34589,7 +35838,7 @@ fn bindgen_test_layout_queue_limits() {
         unsafe {
             &(*(::core::ptr::null::<queue_limits>())).discard_misaligned as *const _ as usize
         },
-        93usize,
+        95usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34599,7 +35848,7 @@ fn bindgen_test_layout_queue_limits() {
     );
     assert_eq!(
         unsafe { &(*(::core::ptr::null::<queue_limits>())).cluster as *const _ as usize },
-        94usize,
+        96usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34612,7 +35861,7 @@ fn bindgen_test_layout_queue_limits() {
             &(*(::core::ptr::null::<queue_limits>())).raid_partial_stripes_expensive as *const _
                 as usize
         },
-        95usize,
+        97usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34622,7 +35871,7 @@ fn bindgen_test_layout_queue_limits() {
     );
     assert_eq!(
         unsafe { &(*(::core::ptr::null::<queue_limits>())).zoned as *const _ as usize },
-        96usize,
+        100usize,
         concat!(
             "Offset of field: ",
             stringify!(queue_limits),
@@ -34630,6 +35879,11 @@ fn bindgen_test_layout_queue_limits() {
             stringify!(zoned)
         )
     );
+}
+impl Default for queue_limits {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct request_queue {
@@ -35621,6 +36875,11 @@ fn bindgen_test_layout_request_queue() {
         )
     );
 }
+impl Default for request_queue {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct blk_plug {
@@ -35670,6 +36929,11 @@ fn bindgen_test_layout_blk_plug() {
             stringify!(cb_list)
         )
     );
+}
+impl Default for blk_plug {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -35880,6 +37144,11 @@ fn bindgen_test_layout_block_device_operations() {
         )
     );
 }
+impl Default for block_device_operations {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub const writeback_sync_modes_WB_SYNC_NONE: writeback_sync_modes = 0;
 pub const writeback_sync_modes_WB_SYNC_ALL: writeback_sync_modes = 1;
 pub type writeback_sync_modes = u32;
@@ -36050,6 +37319,11 @@ fn bindgen_test_layout_writeback_control() {
         )
     );
 }
+impl Default for writeback_control {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 impl writeback_control {
     #[inline]
     pub fn for_kupdate(&self) -> cty::c_uint {
@@ -36194,6 +37468,11 @@ fn bindgen_test_layout_assoc_array() {
         )
     );
 }
+impl Default for assoc_array {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 pub type key_serial_t = i32;
 pub type key_perm_t = u32;
 #[repr(C)]
@@ -36251,6 +37530,11 @@ fn bindgen_test_layout_keyring_index_key() {
         )
     );
 }
+impl Default for keyring_index_key {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct key_payload {
     pub rcu_data0: __BindgenUnionField<*mut cty::c_void>,
@@ -36289,6 +37573,11 @@ fn bindgen_test_layout_key_payload() {
             stringify!(data)
         )
     );
+}
+impl Default for key_payload {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 pub type key_restrict_link_func_t = ::core::option::Option<
     unsafe extern "C" fn(
@@ -36347,6 +37636,11 @@ fn bindgen_test_layout_key_restriction() {
             stringify!(keytype)
         )
     );
+}
+impl Default for key_restriction {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct key {
@@ -36410,6 +37704,11 @@ fn bindgen_test_layout_key__bindgen_ty_1() {
         )
     );
 }
+impl Default for key__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct key__bindgen_ty_2 {
     pub expiry: __BindgenUnionField<time64_t>,
@@ -36448,6 +37747,11 @@ fn bindgen_test_layout_key__bindgen_ty_2() {
             stringify!(revoked_at)
         )
     );
+}
+impl Default for key__bindgen_ty_2 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct key__bindgen_ty_3 {
@@ -36499,6 +37803,11 @@ fn bindgen_test_layout_key__bindgen_ty_3__bindgen_ty_1() {
         )
     );
 }
+impl Default for key__bindgen_ty_3__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_key__bindgen_ty_3() {
     assert_eq!(
@@ -36521,6 +37830,11 @@ fn bindgen_test_layout_key__bindgen_ty_3() {
             stringify!(index_key)
         )
     );
+}
+impl Default for key__bindgen_ty_3 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct key__bindgen_ty_4 {
@@ -36572,6 +37886,11 @@ fn bindgen_test_layout_key__bindgen_ty_4__bindgen_ty_1() {
         )
     );
 }
+impl Default for key__bindgen_ty_4__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_key__bindgen_ty_4() {
     assert_eq!(
@@ -36594,6 +37913,11 @@ fn bindgen_test_layout_key__bindgen_ty_4() {
             stringify!(payload)
         )
     );
+}
+impl Default for key__bindgen_ty_4 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_key() {
@@ -36722,6 +38046,11 @@ fn bindgen_test_layout_key() {
             stringify!(restrict_link)
         )
     );
+}
+impl Default for key {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct user_struct {
@@ -36904,8 +38233,13 @@ fn bindgen_test_layout_user_struct() {
         )
     );
 }
+impl Default for user_struct {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct group_info {
     pub usage: atomic_t,
     pub ngroups: cty::c_int,
@@ -37020,6 +38354,11 @@ fn bindgen_test_layout_cred__bindgen_ty_1() {
             stringify!(rcu)
         )
     );
+}
+impl Default for cred__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_cred() {
@@ -37264,6 +38603,11 @@ fn bindgen_test_layout_cred() {
         )
     );
 }
+impl Default for cred {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct seq_file {
     pub buf: *mut cty::c_char,
@@ -37423,6 +38767,11 @@ fn bindgen_test_layout_seq_file() {
         )
     );
 }
+impl Default for seq_file {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct proc_ns_operations {
@@ -37477,6 +38826,11 @@ fn bindgen_test_layout_ns_common() {
             stringify!(inum)
         )
     );
+}
+impl Default for ns_common {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -37587,8 +38941,13 @@ fn bindgen_test_layout_nsproxy() {
         )
     );
 }
+impl Default for nsproxy {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct uid_gid_extent {
     pub first: u32,
     pub lower_first: u32,
@@ -37699,6 +39058,11 @@ fn bindgen_test_layout_uid_gid_map__bindgen_ty_1__bindgen_ty_1() {
         )
     );
 }
+impl Default for uid_gid_map__bindgen_ty_1__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_uid_gid_map__bindgen_ty_1() {
     assert_eq!(
@@ -37724,6 +39088,11 @@ fn bindgen_test_layout_uid_gid_map__bindgen_ty_1() {
         )
     );
 }
+impl Default for uid_gid_map__bindgen_ty_1 {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[test]
 fn bindgen_test_layout_uid_gid_map() {
     assert_eq!(
@@ -37746,6 +39115,11 @@ fn bindgen_test_layout_uid_gid_map() {
             stringify!(nr_extents)
         )
     );
+}
+impl Default for uid_gid_map {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -37819,8 +39193,13 @@ fn bindgen_test_layout_ucounts() {
         )
     );
 }
+impl Default for ucounts {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct u64_stats_sync {}
 #[test]
 fn bindgen_test_layout_u64_stats_sync() {
@@ -37901,6 +39280,11 @@ fn bindgen_test_layout_cgroup_bpf() {
         )
     );
 }
+impl Default for cgroup_bpf {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct cgroup_taskset {
@@ -37955,6 +39339,11 @@ fn bindgen_test_layout_cgroup_file() {
             stringify!(notify_timer)
         )
     );
+}
+impl Default for cgroup_file {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -38121,6 +39510,11 @@ fn bindgen_test_layout_cgroup_subsys_state() {
             stringify!(parent)
         )
     );
+}
+impl Default for cgroup_subsys_state {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -38370,8 +39764,13 @@ fn bindgen_test_layout_css_set() {
         )
     );
 }
+impl Default for css_set {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct cgroup_base_stat {
     pub cputime: task_cputime,
 }
@@ -38471,6 +39870,11 @@ fn bindgen_test_layout_cgroup_rstat_cpu() {
             stringify!(updated_next)
         )
     );
+}
+impl Default for cgroup_rstat_cpu {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct cgroup {
@@ -38899,6 +40303,11 @@ fn bindgen_test_layout_cgroup() {
         )
     );
 }
+impl Default for cgroup {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct cgroup_root {
     pub kf_root: *mut kernfs_root,
@@ -39037,6 +40446,11 @@ fn bindgen_test_layout_cgroup_root() {
             stringify!(name)
         )
     );
+}
+impl Default for cgroup_root {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct cftype {
@@ -39296,6 +40710,11 @@ fn bindgen_test_layout_cftype() {
             stringify!(write)
         )
     );
+}
+impl Default for cftype {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct cgroup_subsys {
@@ -39622,6 +41041,11 @@ fn bindgen_test_layout_cgroup_subsys() {
         )
     );
 }
+impl Default for cgroup_subsys {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 impl cgroup_subsys {
     #[inline]
     pub fn early_init(&self) -> bool_ {
@@ -39784,6 +41208,11 @@ fn bindgen_test_layout_cgroup_namespace() {
         )
     );
 }
+impl Default for cgroup_namespace {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct blkcg {
     pub css: cgroup_subsys_state,
@@ -39899,6 +41328,11 @@ fn bindgen_test_layout_blkcg() {
         )
     );
 }
+impl Default for blkcg {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 pub struct blkg_rwstat {
     pub cpu_cnt: [percpu_counter; 5usize],
@@ -39936,6 +41370,11 @@ fn bindgen_test_layout_blkg_rwstat() {
             stringify!(aux_cnt)
         )
     );
+}
+impl Default for blkg_rwstat {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -39976,6 +41415,11 @@ fn bindgen_test_layout_blkg_policy_data() {
         )
     );
 }
+impl Default for blkg_policy_data {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct blkcg_policy_data {
@@ -40014,6 +41458,11 @@ fn bindgen_test_layout_blkcg_policy_data() {
             stringify!(plid)
         )
     );
+}
+impl Default for blkcg_policy_data {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct blkcg_gq {
@@ -40229,153 +41678,158 @@ fn bindgen_test_layout_blkcg_gq() {
         )
     );
 }
+impl Default for blkcg_gq {
+    fn default() -> Self {
+        unsafe { ::core::mem::zeroed() }
+    }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct module_sect_attrs {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct module_notes_attrs {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct trace_event_call {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct trace_eval_map {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct uprobe {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct ldt_struct {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct userfaultfd_ctx {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct linux_binfmt {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct mmu_notifier_mm {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct module_param_attrs {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct rt_rq {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct sched_class {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct rt_mutex_waiter {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct compat_robust_list_head {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct ftrace_ret_stack {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct cdev {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct xattr_handler {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct mtd_info {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct dev_pm_qos {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct dma_map_ops {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct of_device_id {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct acpi_device_id {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct irq_domain {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct dma_coherent_mem {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct timer_rand_state {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct blk_mq_ctx {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct blk_mq_ops {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct blk_mq_tag_set {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct assoc_array_ptr {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct key_user {
     pub _address: u8,
 }
