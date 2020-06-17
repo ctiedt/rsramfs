@@ -52,6 +52,7 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
 #[global_allocator]
 static A: mem::KernelAllocator = mem::KernelAllocator {};
 
+// The page operations all inodes must support.
 const ramfs_aops: address_space_operations = address_space_operations {
     readpage: Some(simple_readpage),
     write_begin: Some(simple_write_begin),
@@ -76,6 +77,9 @@ const ramfs_aops: address_space_operations = address_space_operations {
     swap_deactivate: None,
 };
 
+// The operations we support on directories.
+// We provide some ourselves and use generic
+// implementations for others.
 const ramfs_dir_inode_ops: inode_operations = inode_operations {
     create: Some(ramfs_create),
     lookup: Some(simple_lookup),
@@ -100,6 +104,8 @@ const ramfs_dir_inode_ops: inode_operations = inode_operations {
     atomic_open: None,
 };
 
+// Operations on regular file inodes.
+// Provided by <linux/fs.h>.
 static mut ramfs_file_inode_ops: inode_operations = inode_operations {
     setattr: Some(simple_setattr),
     getattr: Some(simple_getattr),
@@ -124,6 +130,8 @@ static mut ramfs_file_inode_ops: inode_operations = inode_operations {
     set_acl: None,
 };
 
+// Operations supported by files.
+// All of these are provided by generic functions.
 static mut ramfs_file_ops: file_operations = file_operations {
     read_iter: Some(generic_file_read_iter),
     write_iter: Some(generic_file_write_iter),

@@ -87,51 +87,6 @@ static const struct super_operations ramfs_ops = {
     .show_options = ramfs_show_options,
 };
 
-// The page operations all inodes must support.
-static const struct address_space_operations ramfs_aops = {
-    .readpage = simple_readpage,
-    .write_begin = simple_write_begin,
-    .write_end = simple_write_end,
-    //TODO: Find out why __set_page_dirty_no_writeback doesn't work
-    //.set_page_dirty = __set_page_dirty_no_writeback,
-    .set_page_dirty = __set_page_dirty_nobuffers,
-};
-
-// Operations supported by files.
-// All of these are provided by generic functions.
-const struct file_operations ramfs_file_ops = {
-    .read_iter = generic_file_read_iter,
-    .write_iter = generic_file_write_iter,
-    .mmap = generic_file_mmap,
-    .fsync = noop_fsync,
-    .splice_read = generic_file_splice_read,
-    .splice_write = iter_file_splice_write,
-    .llseek = generic_file_llseek,
-    .get_unmapped_area = ramfs_mmu_get_unmapped_area,
-};
-
-// Operations on regular file inodes.
-// Provided by <linux/fs.h>.
-const struct inode_operations ramfs_file_inode_ops = {
-    .setattr = simple_setattr,
-    .getattr = simple_getattr,
-};
-
-// The operations we support on directories.
-// We provide some ourselves and use generic
-// implementations for others.
-static const struct inode_operations ramfs_dir_inode_ops = {
-    .create = ramfs_create,
-    .lookup = simple_lookup,
-    .link = simple_link,
-    .unlink = simple_unlink,
-    .symlink = ramfs_symlink,
-    .mkdir = ramfs_mkdir,
-    .rmdir = simple_rmdir,
-    .mknod = ramfs_mknod,
-    .rename = simple_rename,
-};
-
 // Fills our superblock with the relevant info,
 // namely some constants and supported operations.
 // Also initializes an initial inode.
