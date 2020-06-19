@@ -1,0 +1,174 @@
+use bindings::{
+    __set_page_dirty_nobuffers, __this_module, address_space, address_space_operations, dentry,
+    dev_t, file, file_operations, file_system_type, generic_file_llseek, generic_file_mmap,
+    generic_file_read_iter, generic_file_splice_read, generic_file_write_iter, gfp_t, inode,
+    inode_nohighmem, inode_operations, iter_file_splice_write, module, mount_nodev, noop_fsync,
+    page_symlink_inode_operations, simple_dir_operations, simple_getattr, simple_link,
+    simple_lookup, simple_readpage, simple_rename, simple_rmdir, simple_setattr, simple_unlink,
+    simple_write_begin, simple_write_end, super_block, super_operations, umode_t,
+};
+
+// The page operations all inodes must support.
+const ramfs_aops: address_space_operations = address_space_operations {
+    readpage: Some(simple_readpage),
+    write_begin: Some(simple_write_begin),
+    write_end: Some(simple_write_end),
+    set_page_dirty: Some(__set_page_dirty_nobuffers),
+    writepage: None,
+    writepages: None,
+    readpages: None,
+    bmap: None,
+    invalidatepage: None,
+    releasepage: None,
+    freepage: None,
+    direct_IO: None,
+    migratepage: None,
+    isolate_page: None,
+    putback_page: None,
+    launder_page: None,
+    is_partially_uptodate: None,
+    is_dirty_writeback: None,
+    error_remove_page: None,
+    swap_activate: None,
+    swap_deactivate: None,
+};
+
+// The operations we support on directories.
+// We provide some ourselves and use generic
+// implementations for others.
+const ramfs_dir_inode_ops: inode_operations = inode_operations {
+    create: Some(ramfs_create),
+    lookup: Some(simple_lookup),
+    link: Some(simple_link),
+    unlink: Some(simple_unlink),
+    symlink: Some(ramfs_symlink),
+    mkdir: Some(ramfs_mkdir),
+    rmdir: Some(simple_rmdir),
+    mknod: Some(ramfs_mknod),
+    rename: Some(simple_rename),
+    listxattr: None,
+    fiemap: None,
+    update_time: None,
+    tmpfile: None,
+    set_acl: None,
+    get_link: None,
+    permission: None,
+    get_acl: None,
+    readlink: None,
+    setattr: None,
+    getattr: None,
+    atomic_open: None,
+};
+
+// Operations on regular file inodes.
+// Provided by <linux/fs.h>.
+static mut ramfs_file_inode_ops: inode_operations = inode_operations {
+    setattr: Some(simple_setattr),
+    getattr: Some(simple_getattr),
+    atomic_open: None,
+    create: None,
+    lookup: None,
+    get_link: None,
+    permission: None,
+    get_acl: None,
+    readlink: None,
+    link: None,
+    unlink: None,
+    symlink: None,
+    mkdir: None,
+    rmdir: None,
+    mknod: None,
+    rename: None,
+    listxattr: None,
+    fiemap: None,
+    update_time: None,
+    tmpfile: None,
+    set_acl: None,
+};
+
+// Operations supported by files.
+// All of these are provided by generic functions.
+static mut ramfs_file_ops: file_operations = file_operations {
+    read_iter: Some(generic_file_read_iter),
+    write_iter: Some(generic_file_write_iter),
+    mmap: Some(generic_file_mmap),
+    fsync: Some(noop_fsync),
+    splice_read: Some(generic_file_splice_read),
+    splice_write: Some(iter_file_splice_write),
+    llseek: Some(generic_file_llseek),
+    get_unmapped_area: Some(ramfs_mmu_get_unmapped_area),
+    read: None,
+    write: None,
+    iterate: None,
+    iterate_shared: None,
+    poll: None,
+    unlocked_ioctl: None,
+    compat_ioctl: None,
+    open: None,
+    flush: None,
+    release: None,
+    fasync: None,
+    lock: None,
+    sendpage: None,
+    check_flags: None,
+    flock: None,
+    setlease: None,
+    fallocate: None,
+    show_fdinfo: None,
+    copy_file_range: None,
+    clone_file_range: None,
+    dedupe_file_range: None,
+    fadvise: None,
+    mmap_supported_flags: 0,
+    owner: core::ptr::null_mut(),
+};
+
+
+//TODO: Find out why this only works using WSL2
+#[no_mangle]
+pub extern "C" fn ramfs_get_inode(
+    sb: *mut super_block,
+    dir: *const inode,
+    mode: umode_t,
+    dev: dev_t,
+) -> *mut inode {
+    use bindings::{
+        current_time, get_next_ino, inc_nlink, init_special_inode, inode_init_owner, new_inode,
+        S_IFDIR, S_IFLNK, S_IFMT, S_IFREG,
+    };
+
+    const GFP_HIGHUSER: u32 = 6422722;
+    let inode: *mut inode = unsafe { new_inode(sb) };
+
+    if inode != core::ptr::null_mut() {
+        unsafe { (*inode).i_ino = get_next_ino().into() };
+        unsafe { inode_init_owner(inode, dir, mode) };
+        unsafe { (*(*inode).i_mapping).a_ops = &ramfs_aops };
+        unsafe { _mapping_set_gfp_mask((*inode).i_mapping, GFP_HIGHUSER) };
+        unsafe { _mapping_set_unevictable((*inode).i_mapping) };
+        unsafe { (*inode).i_atime = current_time(inode) };
+        unsafe { (*inode).i_mtime = (*inode).i_atime };
+        unsafe { (*inode).i_ctime = (*inode).i_atime };
+        let _mode = u32::from(mode) & S_IFMT;
+        match _mode {
+            _ if _mode == S_IFREG => {
+                unsafe { (*inode).i_op = &ramfs_file_inode_ops };
+                unsafe { (*inode).i_fop = &ramfs_file_ops };
+            }
+            _ if _mode == S_IFDIR => {
+                unsafe { (*inode).i_op = &ramfs_dir_inode_ops };
+                unsafe { (*inode).i_fop = &simple_dir_operations };
+                unsafe { inc_nlink(inode) };
+            }
+            _ if _mode == S_IFLNK => {
+                unsafe { (*inode).i_op = &page_symlink_inode_operations };
+                unsafe { inode_nohighmem(inode) };
+            }
+            _ => {
+                unsafe { init_special_inode(inode, mode, dev) };
+            }
+        }
+    }
+
+    inode
+}
