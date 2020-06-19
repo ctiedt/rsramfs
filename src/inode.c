@@ -79,6 +79,76 @@ static int ramfs_show_options(struct seq_file *m, struct dentry *root)
     return 0;
 }
 
+// The page operations all inodes must support.
+static const struct address_space_operations ramfs_aops = {
+    .readpage = simple_readpage,
+    .write_begin = simple_write_begin,
+    .write_end = simple_write_end,
+    //TODO: Find out why __set_page_dirty_no_writeback doesn't work
+    //.set_page_dirty = __set_page_dirty_no_writeback,
+    .set_page_dirty = __set_page_dirty_nobuffers,
+};
+
+// Operations supported by files.
+// All of these are provided by generic functions.
+const struct file_operations ramfs_file_ops = {
+    .read_iter = generic_file_read_iter,
+    .write_iter = generic_file_write_iter,
+    .mmap = generic_file_mmap,
+    .fsync = noop_fsync,
+    .splice_read = generic_file_splice_read,
+    .splice_write = iter_file_splice_write,
+    .llseek = generic_file_llseek,
+    .get_unmapped_area = ramfs_mmu_get_unmapped_area,
+};
+
+// Operations on regular file inodes.
+// Provided by <linux/fs.h>.
+const struct inode_operations ramfs_file_inode_ops = {
+    .setattr = simple_setattr,
+    .getattr = simple_getattr,
+};
+
+
+// Creates a new inode and fills in the required fields,
+// i.e. the supported operations.
+// We only have to define some manually.
+struct inode *
+ramfs_get_inode(struct super_block *sb, const struct inode *dir, umode_t mode, dev_t dev)
+{
+    struct inode *inode = new_inode(sb);
+
+    if (inode)
+    {
+        inode->i_ino = get_next_ino();
+        inode_init_owner(inode, dir, mode);
+        inode->i_mapping->a_ops = &ramfs_aops;
+        mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
+        mapping_set_unevictable(inode->i_mapping);
+        inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
+        switch (mode & S_IFMT)
+        {
+        default:
+            init_special_inode(inode, mode, dev);
+            break;
+        case S_IFREG:
+            inode->i_op = &ramfs_file_inode_ops;
+            inode->i_fop = &ramfs_file_ops;
+            break;
+        case S_IFDIR:
+            inode->i_op = &ramfs_dir_inode_ops;
+            inode->i_fop = &simple_dir_operations;
+            inc_nlink(inode);
+            break;
+        case S_IFLNK:
+            inode->i_op = &page_symlink_inode_operations;
+            inode_nohighmem(inode);
+            break;
+        }
+    }
+    return inode;
+}
+
 // The operations our superblock uses to communicate
 // with outside programs
 static const struct super_operations ramfs_ops = {
@@ -96,6 +166,7 @@ int ramfs_fill_super(struct super_block *sb, void *data, int silent)
     struct inode *inode;
 
     fsi = kzalloc(sizeof(struct ramfs_fs_info), GFP_KERNEL);
+    fsi->mount_opts.mode = RAMFS_DEFAULT_MODE;
     sb->s_fs_info = fsi;
     if (!fsi)
         return -ENOMEM;

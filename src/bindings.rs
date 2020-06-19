@@ -1129,9 +1129,9 @@ fn bindgen_test_layout_kernel_symbol() {
     );
 }
 #[repr(C)]
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub struct file_operations {
-    pub owner: *const module,
+    pub owner: *mut module,
     pub llseek: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut file, arg2: loff_t, arg3: cty::c_int) -> loff_t,
     >,
@@ -1743,7 +1743,7 @@ fn bindgen_test_layout_timespec() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct timespec64 {
     pub tv_sec: time64_t,
     pub tv_nsec: cty::c_long,
@@ -26104,7 +26104,6 @@ fn bindgen_test_layout_dir_context() {
 }
 #[repr(C)]
 #[repr(align(64))]
-#[derive(PartialEq)]
 pub struct inode_operations {
     pub lookup: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut inode, arg2: *mut dentry, arg3: cty::c_uint) -> *mut dentry,
@@ -27000,6 +26999,9 @@ extern "C" {
             ) -> cty::c_int,
         >,
     ) -> *mut dentry;
+}
+extern "C" {
+    pub fn kill_anon_super(sb: *mut super_block);
 }
 extern "C" {
     pub fn kill_litter_super(sb: *mut super_block);

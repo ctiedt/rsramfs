@@ -26,6 +26,12 @@ use bindings::{
 };
 
 extern "C" {
+    fn ramfs_get_inode(
+        sb: *mut super_block,
+        dir: *const inode,
+        mode: umode_t,
+        dev: dev_t,
+    ) -> *mut inode;
     fn c_dget(dentry: *mut dentry) -> *mut dentry;
     fn _mapping_set_gfp_mask(m: *mut address_space, mask: gfp_t);
     fn _mapping_set_unevictable(m: *mut address_space);
@@ -52,6 +58,7 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
 #[global_allocator]
 static A: mem::KernelAllocator = mem::KernelAllocator {};
 
+/*
 // The page operations all inodes must support.
 const ramfs_aops: address_space_operations = address_space_operations {
     readpage: Some(simple_readpage),
@@ -167,6 +174,8 @@ static mut ramfs_file_ops: file_operations = file_operations {
     owner: core::ptr::null_mut(),
 };
 
+
+//TODO: Find out why this only works using WSL2
 #[no_mangle]
 pub extern "C" fn ramfs_get_inode(
     sb: *mut super_block,
@@ -214,6 +223,21 @@ pub extern "C" fn ramfs_get_inode(
 
     inode
 }
+*/
+
+fn rs_ramfs_get_inode(
+    sb: *mut super_block,
+    dir: *const inode,
+    mode: umode_t,
+    dev: dev_t,
+) -> Option<*mut inode> {
+    let inode = unsafe { ramfs_get_inode(sb, dir, mode, dev) };
+    if inode == core::ptr::null_mut() {
+        return None;
+    } else {
+        return Some(inode);
+    }
+}
 
 #[no_mangle]
 pub extern "C" fn ramfs_mknod(
@@ -224,18 +248,18 @@ pub extern "C" fn ramfs_mknod(
 ) -> cty::c_int {
     use bindings::{current_time, d_instantiate, ENOSPC};
 
-    let inode = unsafe { ramfs_get_inode((*dir).i_sb, dir, mode, dev) };
-    let mut error = -(ENOSPC as i32);
+    let sb = unsafe { (*dir).i_sb };
 
-    if inode != core::ptr::null_mut() {
-        unsafe { d_instantiate(dentry, inode) };
-        unsafe { c_dget(dentry) };
-        error = 0;
-        unsafe { (*dir).i_mtime = current_time(dir) };
-        unsafe { (*dir).i_ctime = (*dir).i_mtime };
+    match rs_ramfs_get_inode(sb, dir, mode, dev) {
+        Some(inode) => {
+            unsafe { d_instantiate(dentry, inode) };
+            unsafe { c_dget(dentry) };
+            unsafe { (*dir).i_mtime = current_time(dir) };
+            unsafe { (*dir).i_ctime = (*dir).i_mtime };
+            0
+        }
+        None => -(ENOSPC as i32),
     }
-
-    error
 }
 
 #[no_mangle]
