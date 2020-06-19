@@ -41,3 +41,8 @@ extern int ramfs_symlink(struct inode *dir, struct dentry *dentry, const char *s
 // i.e. the supported operations.
 // We only have to define some manually.
 extern struct inode *ramfs_get_inode(struct super_block *sb, const struct inode *dir, umode_t mode, dev_t dev);
+
+// Calls a function that mounts the fs without a block device
+// since we only use RAM pages.
+// Also initializes the superblock.
+struct dentry *ramfs_mount(struct file_system_type *fs_type, int flags, const char *dev_name, void *data);

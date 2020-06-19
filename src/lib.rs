@@ -17,12 +17,19 @@ mod mem;
 #[allow(non_snake_case)]
 mod bindings;
 
-use bindings::{address_space, dentry, dev_t, gfp_t, inode, super_block, umode_t};
+use bindings::{
+    address_space, dentry, dev_t, file_system_type, gfp_t, inode, super_block, umode_t,
+};
 
 use c_fns::rs_page_symlink;
 use c_structs::InodeOperations;
 
 extern "C" {
+    fn ramfs_fill_super(
+        sb: *mut super_block,
+        data: *mut cty::c_void,
+        silent: cty::c_int,
+    ) -> cty::c_int;
     fn _mapping_set_gfp_mask(m: *mut address_space, mask: gfp_t);
     fn _mapping_set_unevictable(m: *mut address_space);
 }
@@ -137,6 +144,17 @@ pub extern "C" fn ramfs_symlink(
         }
         None => -(ENOSPC as cty::c_int),
     }
+}
+
+#[no_mangle]
+pub extern "C" fn ramfs_mount(
+    fs_type: *mut file_system_type,
+    flags: cty::c_int,
+    _dev_name: *const cty::c_char,
+    data: *mut cty::c_void,
+) -> *mut dentry {
+    use c_fns::rs_mount_nodev;
+    rs_mount_nodev(fs_type, flags, data, Some(ramfs_fill_super))
 }
 
 #[no_mangle]

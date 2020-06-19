@@ -186,16 +186,6 @@ int ramfs_fill_super(struct super_block *sb, void *data, int silent)
     return 0;
 }
 
-// Calls a function that mounts the fs without a block device
-// since we only use RAM pages.
-// Also initializes the superblock.
-struct dentry *
-ramfs_mount(struct file_system_type *fs_type, int flags,
-            const char *dev_name, void *data)
-{
-    return mount_nodev(fs_type, flags, data, ramfs_fill_super);
-}
-
 // Describes the important parts of an fs.
 // Specifically the name and functions for
 // mounting and unmounting.
