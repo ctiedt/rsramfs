@@ -1,6 +1,6 @@
 use crate::bindings::{
-    d_instantiate, dentry, dev_t, file_system_type, inc_nlink, inode, mount_nodev, page_symlink,
-    super_block, umode_t,
+    d_instantiate, dentry, dev_t, file_system_type, inc_nlink, inode, iput, mount_nodev,
+    page_symlink, super_block, umode_t,
 };
 
 extern "C" {
@@ -37,6 +37,10 @@ pub fn rs_dget(dentry: *mut dentry) -> *mut dentry {
 
 pub fn rs_inc_nlink(inode: *mut inode) {
     unsafe { inc_nlink(inode) }
+}
+
+pub fn rs_iput(inode: *mut inode) {
+    unsafe { iput(inode) }
 }
 
 pub fn rs_mount_nodev(
