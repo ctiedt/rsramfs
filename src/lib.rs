@@ -58,9 +58,7 @@ pub extern "C" fn rs_ramfs_mknod(
     use bindings::ENOSPC;
     use c_fns::{rs_d_instantiate, rs_dget, rs_ramfs_get_inode};
 
-    let sb = unsafe { (*dir).i_sb };
-
-    match rs_ramfs_get_inode(sb, dir, mode, dev) {
+    match rs_ramfs_get_inode(unsafe { (*dir).i_sb }, dir, mode, dev) {
         Some(inode) => {
             rs_d_instantiate(dentry, inode);
             rs_dget(dentry);

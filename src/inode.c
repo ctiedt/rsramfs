@@ -40,10 +40,6 @@ void c_print(char *msg, int len)
     printk(KERN_INFO "%.*s", len, msg);
 }
 
-// We need this declaration here because of a
-// cyclic dependency.
-static const struct inode_operations ramfs_dir_inode_ops;
-
 // The mount options on our fs.
 // We only support the mode.
 struct ramfs_mount_opts
@@ -109,6 +105,17 @@ const struct inode_operations ramfs_file_inode_ops = {
     .getattr = simple_getattr,
 };
 
+static const struct inode_operations ramfs_dir_inode_ops = {
+    .create = ramfs_create,
+    .lookup = simple_lookup,
+    .link = simple_link,
+    .unlink = simple_unlink,
+    .symlink = ramfs_symlink,
+    .mkdir = ramfs_mkdir,
+    .rmdir = simple_rmdir,
+    .mknod = ramfs_mknod,
+    .rename = simple_rename,
+};
 
 // Creates a new inode and fills in the required fields,
 // i.e. the supported operations.
