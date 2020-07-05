@@ -2,6 +2,7 @@ use crate::bindings::{
     d_instantiate, dentry, dev_t, file_system_type, inc_nlink, inode, iput, mount_nodev,
     page_symlink, super_block, umode_t,
 };
+use crate::c_structs::{Inode, InodeOperations};
 
 extern "C" {
     fn ramfs_get_inode(
@@ -15,32 +16,32 @@ extern "C" {
 
 pub fn rs_ramfs_get_inode(
     sb: *mut super_block,
-    dir: *const inode,
+    dir: Inode,
     mode: umode_t,
     dev: dev_t,
-) -> Option<*mut inode> {
-    let inode = unsafe { ramfs_get_inode(sb, dir, mode, dev) };
+) -> Option<Inode> {
+    let inode = unsafe { ramfs_get_inode(sb, dir.get_ptr(), mode, dev) };
     if inode == core::ptr::null_mut() {
         return None;
     } else {
-        return Some(inode);
+        return Some(Inode::from_ptr(inode));
     }
 }
 
-pub fn rs_d_instantiate(dentry: *mut dentry, inode: *mut inode) {
-    unsafe { d_instantiate(dentry, inode) }
+pub fn rs_d_instantiate(dentry: *mut dentry, inode: Inode) {
+    unsafe { d_instantiate(dentry, inode.get_ptr()) }
 }
 
 pub fn rs_dget(dentry: *mut dentry) -> *mut dentry {
     unsafe { c_dget(dentry) }
 }
 
-pub fn rs_inc_nlink(inode: *mut inode) {
-    unsafe { inc_nlink(inode) }
+pub fn rs_inc_nlink(inode: Inode) {
+    unsafe { inc_nlink(inode.get_ptr()) }
 }
 
-pub fn rs_iput(inode: *mut inode) {
-    unsafe { iput(inode) }
+pub fn rs_iput(inode: Inode) {
+    unsafe { iput(inode.get_ptr()) }
 }
 
 pub fn rs_mount_nodev(
@@ -59,11 +60,11 @@ pub fn rs_mount_nodev(
 }
 
 pub fn rs_page_symlink(
-    inode: *mut inode,
+    inode: Inode,
     symname: *const cty::c_char,
     len: cty::c_int,
 ) -> Result<(), cty::c_int> {
-    match unsafe { page_symlink(inode, symname, len) } {
+    match unsafe { page_symlink(inode.get_ptr(), symname, len) } {
         0 => Ok(()),
         v => Err(v),
     }

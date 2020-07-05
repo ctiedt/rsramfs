@@ -22,7 +22,7 @@ use bindings::{
 };
 
 use c_fns::rs_page_symlink;
-use c_structs::InodeOperations;
+use c_structs::{Inode, InodeOperations};
 
 extern "C" {
     fn ramfs_fill_super(
@@ -50,7 +50,7 @@ static A: mem::KernelAllocator = mem::KernelAllocator {};
 
 #[no_mangle]
 pub extern "C" fn rs_ramfs_mknod(
-    dir: *mut inode,
+    dir: Inode,
     dentry: *mut dentry,
     mode: umode_t,
     dev: dev_t,
@@ -58,11 +58,11 @@ pub extern "C" fn rs_ramfs_mknod(
     use bindings::ENOSPC;
     use c_fns::{rs_d_instantiate, rs_dget, rs_ramfs_get_inode};
 
-    match rs_ramfs_get_inode(unsafe { (*dir).i_sb }, dir, mode, dev) {
+    match rs_ramfs_get_inode(dir.get_sb(), dir, mode, dev) {
         Some(inode) => {
             rs_d_instantiate(dentry, inode);
             rs_dget(dentry);
-            unsafe { (*dir).set_mctime_current() };
+            dir.set_mctime_current();
             Ok(())
         }
         None => Err(-(ENOSPC as i32)),
@@ -76,7 +76,7 @@ pub extern "C" fn ramfs_mknod(
     mode: umode_t,
     dev: dev_t,
 ) -> cty::c_int {
-    match rs_ramfs_mknod(dir, dentry, mode, dev) {
+    match rs_ramfs_mknod(Inode::from_ptr(dir), dentry, mode, dev) {
         Ok(()) => 0,
         Err(e) => e,
     }
@@ -86,9 +86,9 @@ pub extern "C" fn ramfs_mknod(
 pub extern "C" fn ramfs_mkdir(dir: *mut inode, dentry: *mut dentry, mode: umode_t) -> cty::c_int {
     use bindings::S_IFDIR;
     use c_fns::rs_inc_nlink;
-    match rs_ramfs_mknod(dir, dentry, mode | (S_IFDIR as u16), 0) {
+    match rs_ramfs_mknod(Inode::from_ptr(dir), dentry, mode | (S_IFDIR as u16), 0) {
         Ok(_) => {
-            rs_inc_nlink(dir);
+            rs_inc_nlink(Inode::from_ptr(dir));
             0
         }
         Err(e) => e,
@@ -103,7 +103,7 @@ pub extern "C" fn ramfs_create(
     _excl: bool,
 ) -> cty::c_int {
     use bindings::S_IFREG;
-    match rs_ramfs_mknod(dir, dentry, mode | (S_IFREG as u16), 0) {
+    match rs_ramfs_mknod(Inode::from_ptr(dir), dentry, mode | (S_IFREG as u16), 0) {
         Ok(_) => 0,
         Err(e) => e,
     }
@@ -119,9 +119,11 @@ pub extern "C" fn ramfs_symlink(
     use c_fns::{rs_d_instantiate, rs_dget, rs_iput, rs_ramfs_get_inode};
     let name = unsafe { cstr_core::CStr::from_ptr(symname) };
 
+    let mut dir_inode = Inode::from_ptr(dir);
+
     match rs_ramfs_get_inode(
-        unsafe { (*dir).i_sb },
-        dir,
+        dir_inode.get_sb(),
+        dir_inode,
         (S_IFLNK as u16) | (S_IRWXUGO as u16),
         0,
     ) {
@@ -131,7 +133,7 @@ pub extern "C" fn ramfs_symlink(
                 Ok(_) => {
                     rs_d_instantiate(dentry, inode);
                     rs_dget(dentry);
-                    unsafe { (*dir).set_mctime_current() };
+                    dir_inode.set_mctime_current();
                     0
                 }
                 Err(e) => {
