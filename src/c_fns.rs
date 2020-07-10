@@ -1,8 +1,8 @@
 use crate::bindings::{
-    d_instantiate, dentry, dev_t, file_system_type, inc_nlink, inode, iput, mount_nodev,
-    page_symlink, super_block, umode_t,
+    d_instantiate, d_make_root, dentry, dev_t, file_system_type, inc_nlink, inode, iput,
+    mount_nodev, page_symlink, super_block, umode_t,
 };
-use crate::c_structs::{Inode};
+use crate::c_structs::Inode;
 
 extern "C" {
     fn ramfs_get_inode(
@@ -24,7 +24,7 @@ pub fn rs_ramfs_get_inode(
     if inode == core::ptr::null_mut() {
         return None;
     } else {
-        return Some(Inode::from_ptr(inode));
+        return Some(Inode::from_ptr_unchecked(inode));
     }
 }
 
@@ -42,6 +42,10 @@ pub fn rs_inc_nlink(inode: Inode) {
 
 pub fn rs_iput(inode: Inode) {
     unsafe { iput(inode.get_ptr()) }
+}
+
+pub fn rs_d_make_root(inode: Inode) -> *mut dentry {
+    unsafe { d_make_root(inode.get_ptr()) }
 }
 
 pub fn rs_mount_nodev(
