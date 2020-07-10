@@ -23,7 +23,7 @@ use bindings::{
 };
 
 use c_fns::rs_page_symlink;
-use c_structs::{Inode};
+use c_structs::{Inode, DEFAULT_SUPER_OPS};
 
 extern "C" {
     fn _mapping_set_gfp_mask(m: *mut address_space, mask: gfp_t);
@@ -179,16 +179,16 @@ pub extern "C" fn ramfs_fill_super(
     use bindings::{ENOMEM, PAGE_SHIFT, RAMFS_MAGIC, S_IFDIR};
     use c_fns::{rs_d_make_root, rs_ramfs_get_inode};
     use c_structs::SuperBlock;
-    const MAX_LFS_FILESIZE: i64 = 9223372036854775807;
+    const MAX_LFS_FILESIZE: i64 = core::i64::MAX;
 
-    let mut fsi = RamfsFsInfo {
+    let mut fsi = alloc::boxed::Box::new(RamfsFsInfo {
         mount_opts: RamfsMountOpts {
             mode: RAMFS_DEFAULT_MODE,
         },
-    };
+    });
 
     let super_block = SuperBlock::from_ptr(sb);
-    super_block.set_fs_info(&mut fsi);
+    super_block.set_fs_info(&mut *fsi);
     super_block.set_fields(
         MAX_LFS_FILESIZE,
         PAGE_SHIFT as cty::c_uchar,
@@ -219,8 +219,7 @@ pub extern "C" fn ramfs_mount(
 
 #[no_mangle]
 pub extern "C" fn ramfs_kill_super(sb: *mut super_block) {
-    use bindings::kill_litter_super;
-    //unsafe { kfree((*sb).s_fs_info) };
-    //TODO: Find out why the above panics
+    use bindings::{kfree, kill_litter_super};
+    unsafe { kfree((*sb).s_fs_info) };
     unsafe { kill_litter_super(sb) };
 }
