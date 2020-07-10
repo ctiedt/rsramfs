@@ -3838,7 +3838,6 @@ impl Default for fpu {
     }
 }
 #[repr(C, packed)]
-#[derive(Debug, Default)]
 pub struct orc_entry {
     pub sp_offset: s16,
     pub bp_offset: s16,
