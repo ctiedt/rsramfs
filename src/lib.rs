@@ -119,7 +119,7 @@ pub extern "C" fn ramfs_symlink(
     use c_fns::{rs_d_instantiate, rs_dget, rs_iput, rs_ramfs_get_inode};
     let name = unsafe { cstr_core::CStr::from_ptr(symname) };
 
-    let mut dir_inode = Inode::from_ptr(dir);
+    let dir_inode = Inode::from_ptr(dir);
 
     match rs_ramfs_get_inode(
         dir_inode.get_sb(),
