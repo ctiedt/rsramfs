@@ -23,7 +23,7 @@ use bindings::{
 };
 
 use c_fns::rs_page_symlink;
-use c_structs::{Inode};
+use c_structs::{Inode, DEFAULT_SUPER_OPS};
 
 extern "C" {
     fn _mapping_set_gfp_mask(m: *mut address_space, mask: gfp_t);
