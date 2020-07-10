@@ -18,20 +18,17 @@ mod mem;
 mod bindings;
 
 use bindings::{
-    address_space, dentry, dev_t, file_system_type, gfp_t, inode, super_block, umode_t,
+    address_space, dentry, dev_t, file_system_type, generic_delete_inode, gfp_t, inode, seq_file,
+    simple_statfs, super_block, super_operations, umode_t,
 };
 
 use c_fns::rs_page_symlink;
-use c_structs::{Inode, InodeOperations};
+use c_structs::Inode;
 
 extern "C" {
-    fn ramfs_fill_super(
-        sb: *mut super_block,
-        data: *mut cty::c_void,
-        silent: cty::c_int,
-    ) -> cty::c_int;
     fn _mapping_set_gfp_mask(m: *mut address_space, mask: gfp_t);
     fn _mapping_set_unevictable(m: *mut address_space);
+    fn ramfs_show_options(m: *mut seq_file, root: *mut dentry) -> cty::c_int;
 }
 
 #[cfg(not(test))]
@@ -76,7 +73,7 @@ pub extern "C" fn ramfs_mknod(
     mode: umode_t,
     dev: dev_t,
 ) -> cty::c_int {
-    match rs_ramfs_mknod(Inode::from_ptr(dir), dentry, mode, dev) {
+    match rs_ramfs_mknod(Inode::from_ptr_unchecked(dir), dentry, mode, dev) {
         Ok(()) => 0,
         Err(e) => e,
     }
@@ -86,9 +83,14 @@ pub extern "C" fn ramfs_mknod(
 pub extern "C" fn ramfs_mkdir(dir: *mut inode, dentry: *mut dentry, mode: umode_t) -> cty::c_int {
     use bindings::S_IFDIR;
     use c_fns::rs_inc_nlink;
-    match rs_ramfs_mknod(Inode::from_ptr(dir), dentry, mode | (S_IFDIR as u16), 0) {
+    match rs_ramfs_mknod(
+        Inode::from_ptr_unchecked(dir),
+        dentry,
+        mode | (S_IFDIR as u16),
+        0,
+    ) {
         Ok(_) => {
-            rs_inc_nlink(Inode::from_ptr(dir));
+            rs_inc_nlink(Inode::from_ptr_unchecked(dir));
             0
         }
         Err(e) => e,
@@ -103,7 +105,12 @@ pub extern "C" fn ramfs_create(
     _excl: bool,
 ) -> cty::c_int {
     use bindings::S_IFREG;
-    match rs_ramfs_mknod(Inode::from_ptr(dir), dentry, mode | (S_IFREG as u16), 0) {
+    match rs_ramfs_mknod(
+        Inode::from_ptr_unchecked(dir),
+        dentry,
+        mode | (S_IFREG as u16),
+        0,
+    ) {
         Ok(_) => 0,
         Err(e) => e,
     }
@@ -119,7 +126,7 @@ pub extern "C" fn ramfs_symlink(
     use c_fns::{rs_d_instantiate, rs_dget, rs_iput, rs_ramfs_get_inode};
     let name = unsafe { cstr_core::CStr::from_ptr(symname) };
 
-    let mut dir_inode = Inode::from_ptr(dir);
+    let dir_inode = Inode::from_ptr_unchecked(dir);
 
     match rs_ramfs_get_inode(
         dir_inode.get_sb(),
@@ -146,6 +153,80 @@ pub extern "C" fn ramfs_symlink(
     }
 }
 
+const RAMFS_OPS: super_operations = super_operations {
+    statfs: Some(simple_statfs),
+    drop_inode: Some(generic_delete_inode),
+    show_options: Some(ramfs_show_options),
+    alloc_inode: None,
+    destroy_inode: None,
+    dirty_inode: None,
+    write_inode: None,
+    evict_inode: None,
+    put_super: None,
+    sync_fs: None,
+    freeze_super: None,
+    freeze_fs: None,
+    thaw_super: None,
+    unfreeze_fs: None,
+    remount_fs: None,
+    umount_begin: None,
+    show_devname: None,
+    show_path: None,
+    show_stats: None,
+    quota_read: None,
+    quota_write: None,
+    get_dquots: None,
+    bdev_try_to_free_page: None,
+    nr_cached_objects: None,
+    free_cached_objects: None,
+};
+
+const RAMFS_DEFAULT_MODE: umode_t = 0775;
+
+struct RamfsMountOpts {
+    mode: umode_t,
+}
+
+pub struct RamfsFsInfo {
+    mount_opts: RamfsMountOpts,
+}
+
+#[no_mangle]
+pub extern "C" fn ramfs_fill_super(
+    sb: *mut super_block,
+    _data: *mut cty::c_void,
+    _silent: cty::c_int,
+) -> cty::c_int {
+    use bindings::{ENOMEM, PAGE_SHIFT, RAMFS_MAGIC, S_IFDIR};
+    use c_fns::{rs_d_make_root, rs_ramfs_get_inode};
+    use c_structs::SuperBlock;
+    const MAX_LFS_FILESIZE: i64 = 9223372036854775807;
+
+    let mut fsi = RamfsFsInfo {
+        mount_opts: RamfsMountOpts {
+            mode: RAMFS_DEFAULT_MODE,
+        },
+    };
+
+    let super_block = SuperBlock::from_ptr(sb);
+    super_block.set_fs_info(&mut fsi);
+    super_block.set_fields(
+        MAX_LFS_FILESIZE,
+        PAGE_SHIFT as cty::c_uchar,
+        RAMFS_MAGIC as cty::c_ulonglong,
+        &RAMFS_OPS,
+        1,
+    );
+
+    match rs_ramfs_get_inode(sb, Inode::null(), S_IFDIR as u16 | fsi.mount_opts.mode, 0) {
+        Some(inode) => {
+            unsafe { (*sb).s_root = rs_d_make_root(inode) };
+            0
+        }
+        None => -(ENOMEM as i32),
+    }
+}
+
 #[no_mangle]
 pub extern "C" fn ramfs_mount(
     fs_type: *mut file_system_type,
@@ -160,6 +241,6 @@ pub extern "C" fn ramfs_mount(
 #[no_mangle]
 pub extern "C" fn ramfs_kill_super(sb: *mut super_block) {
     use bindings::{kfree, kill_litter_super};
-    unsafe { kfree((*sb).s_fs_info) };
+    //unsafe { kfree((*sb).s_fs_info) };
     unsafe { kill_litter_super(sb) };
 }

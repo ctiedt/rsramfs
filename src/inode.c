@@ -66,7 +66,7 @@ ramfs_mmu_get_unmapped_area(struct file *file, unsigned long addr, unsigned long
 // Shows the mount options of our fs.
 // In our case that should just be the mode,
 // i.e. default permissions.
-static int ramfs_show_options(struct seq_file *m, struct dentry *root)
+int ramfs_show_options(struct seq_file *m, struct dentry *root)
 {
     struct ramfs_fs_info *fsi = root->d_sb->s_fs_info;
 
@@ -167,6 +167,7 @@ static const struct super_operations ramfs_ops = {
 // Fills our superblock with the relevant info,
 // namely some constants and supported operations.
 // Also initializes an initial inode.
+/*
 int ramfs_fill_super(struct super_block *sb, void *data, int silent)
 {
     struct ramfs_fs_info *fsi;
@@ -191,7 +192,7 @@ int ramfs_fill_super(struct super_block *sb, void *data, int silent)
         return -ENOMEM;
 
     return 0;
-}
+}*/
 
 // Describes the important parts of an fs.
 // Specifically the name and functions for
