@@ -45,25 +45,25 @@ impl Inode {
     pub fn from_ptr_unchecked(inode: *mut inode) -> Self {
         Self { ptr: inode }
     }
+  
+    pub fn get_ptr(self) -> *mut inode {
+        self.ptr
+    }
+  
+    pub fn get_sb(self) -> *mut super_block {
+        unsafe { (*self.ptr).i_sb }
+    }
+  
+    pub fn set_mctime_current(self) {
+        unsafe { (*self.ptr).i_mtime = current_time(self.ptr) };
+        unsafe { (*self.ptr).i_ctime = (*self.ptr).i_mtime };
+    }
 
     pub fn null() -> Self {
         Self {
             ptr: core::ptr::null_mut(),
         }
-    }
-
-    pub fn get_ptr(self) -> *mut inode {
-        self.ptr
-    }
-
-    pub fn get_sb(self) -> *mut super_block {
-        unsafe { (*self.ptr).i_sb }
-    }
-
-    pub fn set_mctime_current(self) {
-        unsafe { (*self.ptr).i_mtime = current_time(self.ptr) };
-        unsafe { (*self.ptr).i_ctime = (*self.ptr).i_mtime };
-    }
+    }  
 }
 
 #[derive(Clone, Copy)]
