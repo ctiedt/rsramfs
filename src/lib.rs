@@ -23,7 +23,7 @@ use bindings::{
 };
 
 use c_fns::rs_page_symlink;
-use c_structs::Inode;
+use c_structs::{Inode, DEFAULT_SUPER_OPS};
 
 extern "C" {
     fn _mapping_set_gfp_mask(m: *mut address_space, mask: gfp_t);
@@ -157,28 +157,7 @@ const RAMFS_OPS: super_operations = super_operations {
     statfs: Some(simple_statfs),
     drop_inode: Some(generic_delete_inode),
     show_options: Some(ramfs_show_options),
-    alloc_inode: None,
-    destroy_inode: None,
-    dirty_inode: None,
-    write_inode: None,
-    evict_inode: None,
-    put_super: None,
-    sync_fs: None,
-    freeze_super: None,
-    freeze_fs: None,
-    thaw_super: None,
-    unfreeze_fs: None,
-    remount_fs: None,
-    umount_begin: None,
-    show_devname: None,
-    show_path: None,
-    show_stats: None,
-    quota_read: None,
-    quota_write: None,
-    get_dquots: None,
-    bdev_try_to_free_page: None,
-    nr_cached_objects: None,
-    free_cached_objects: None,
+    ..DEFAULT_SUPER_OPS
 };
 
 const RAMFS_DEFAULT_MODE: umode_t = 0775;
@@ -240,7 +219,8 @@ pub extern "C" fn ramfs_mount(
 
 #[no_mangle]
 pub extern "C" fn ramfs_kill_super(sb: *mut super_block) {
-    use bindings::{kfree, kill_litter_super};
+    use bindings::kill_litter_super;
     //unsafe { kfree((*sb).s_fs_info) };
+    //TODO: Find out why the above panics
     unsafe { kill_litter_super(sb) };
 }

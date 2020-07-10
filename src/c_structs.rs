@@ -1,5 +1,33 @@
 use crate::bindings::{current_time, inode, super_block, super_operations};
 
+pub const DEFAULT_SUPER_OPS: super_operations = super_operations {
+    statfs: None,
+    drop_inode: None,
+    show_options: None,
+    alloc_inode: None,
+    destroy_inode: None,
+    dirty_inode: None,
+    write_inode: None,
+    evict_inode: None,
+    put_super: None,
+    sync_fs: None,
+    freeze_super: None,
+    freeze_fs: None,
+    thaw_super: None,
+    unfreeze_fs: None,
+    remount_fs: None,
+    umount_begin: None,
+    show_devname: None,
+    show_path: None,
+    show_stats: None,
+    quota_read: None,
+    quota_write: None,
+    get_dquots: None,
+    bdev_try_to_free_page: None,
+    nr_cached_objects: None,
+    free_cached_objects: None,
+};
+
 #[derive(Copy, Clone)]
 pub struct Inode {
     ptr: *mut inode,
@@ -40,7 +68,7 @@ impl Inode {
 
 #[derive(Clone, Copy)]
 pub struct SuperBlock {
-    ptr: *mut super_block,
+    pub ptr: *mut super_block,
 }
 
 impl SuperBlock {
