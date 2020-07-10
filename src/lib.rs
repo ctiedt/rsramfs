@@ -22,7 +22,7 @@ use bindings::{
 };
 
 use c_fns::rs_page_symlink;
-use c_structs::{Inode, InodeOperations};
+use c_structs::{Inode};
 
 extern "C" {
     fn ramfs_fill_super(

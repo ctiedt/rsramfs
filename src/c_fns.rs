@@ -2,7 +2,7 @@ use crate::bindings::{
     d_instantiate, dentry, dev_t, file_system_type, inc_nlink, inode, iput, mount_nodev,
     page_symlink, super_block, umode_t,
 };
-use crate::c_structs::{Inode, InodeOperations};
+use crate::c_structs::{Inode};
 
 extern "C" {
     fn ramfs_get_inode(
