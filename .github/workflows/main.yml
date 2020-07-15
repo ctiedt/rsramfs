@@ -24,6 +24,7 @@ jobs:
 
     - name: Setup rust
       run: |
+        rustup default nightly-x86_64-unknown-linux-gnu
         rustup component add rust-src
         cargo install cargo-xbuild
 
