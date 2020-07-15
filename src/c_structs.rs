@@ -1,4 +1,6 @@
-use crate::bindings::{current_time, inode, super_block, super_operations};
+#![allow(dead_code)]
+
+use crate::bindings::{current_time, inode, kfree, super_block, super_operations};
 
 pub const DEFAULT_SUPER_OPS: super_operations = super_operations {
     statfs: None,
@@ -45,15 +47,12 @@ impl Inode {
     pub fn from_ptr_unchecked(inode: *mut inode) -> Self {
         Self { ptr: inode }
     }
-  
     pub fn get_ptr(self) -> *mut inode {
         self.ptr
     }
-  
     pub fn get_sb(self) -> *mut super_block {
         unsafe { (*self.ptr).i_sb }
     }
-  
     pub fn set_mctime_current(self) {
         unsafe { (*self.ptr).i_mtime = current_time(self.ptr) };
         unsafe { (*self.ptr).i_ctime = (*self.ptr).i_mtime };
@@ -63,7 +62,7 @@ impl Inode {
         Self {
             ptr: core::ptr::null_mut(),
         }
-    }  
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -72,12 +71,30 @@ pub struct SuperBlock {
 }
 
 impl SuperBlock {
-    pub fn from_ptr(sb: *mut super_block) -> Self {
+    pub fn from_ptr_unchecked(sb: *mut super_block) -> Self {
         Self { ptr: sb }
+    }
+
+    pub fn from_ptr(sb: *mut super_block) -> Option<Self> {
+        if sb == core::ptr::null_mut() {
+            None
+        } else {
+            Some(Self { ptr: sb })
+        }
+    }
+
+    pub fn get_ptr(self) -> *mut super_block {
+        self.ptr
     }
 
     pub fn set_fs_info(&self, fsi: &mut crate::RamfsFsInfo) {
         unsafe { (*self.ptr).s_fs_info = fsi as *mut _ as *mut cty::c_void };
+    }
+
+    pub fn free_fs_info(&self) {
+        if unsafe { (*self.ptr).s_fs_info } != core::ptr::null_mut() {
+            unsafe { kfree((*self.ptr).s_fs_info) }
+        }
     }
 
     pub fn set_fields(

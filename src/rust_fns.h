@@ -47,4 +47,7 @@ extern struct inode *ramfs_get_inode(struct super_block *sb, const struct inode 
 // Also initializes the superblock.
 extern struct dentry *ramfs_mount(struct file_system_type *fs_type, int flags, const char *dev_name, void *data);
 
+// Fills our superblock with the relevant info,
+// namely some constants and supported operations.
+// Also initializes an initial inode.
 extern int ramfs_fill_super(struct super_block *sb, void *data, int silent);
