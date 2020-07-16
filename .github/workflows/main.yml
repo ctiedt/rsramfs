@@ -38,10 +38,13 @@ jobs:
       run: sudo insmod build/rsramfs.ko
     
     - name: Mount
-      run: sudo mount -t rsramfs none test
+      run: sudo mount -t rsramfs none /mnt/test
     
     - name: Create a file
-      run: echo "Hello World" > test/file
+      run: echo "Hello World" > /mnt/test/file
+    
+    - name: Create a directory
+      run: mkdir /mnt/test/dir
       
     - name: Unmount
       run: sudo umount /mnt/test
