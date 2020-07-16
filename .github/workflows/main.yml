@@ -29,7 +29,9 @@ jobs:
         cargo install cargo-xbuild
     
     - name: Setup tests
-      run: mkdir test
+      run: |
+        make
+        mkdir test
 
     # Runs a single command using the runners shell
     - name: Insert module
