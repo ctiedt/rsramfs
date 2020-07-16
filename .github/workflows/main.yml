@@ -31,7 +31,7 @@ jobs:
     - name: Setup tests
       run: |
         make
-        mkdir test
+        mkdir /mnt/test
 
     # Runs a single command using the runners shell
     - name: Insert module
@@ -44,7 +44,10 @@ jobs:
       run: echo "Hello World" > test/file
       
     - name: Unmount
-      run: sudo umount test
+      run: sudo umount /mnt/test
       
     - name: Remove module
       run: sudo rmmod rsramfs
+
+    - name: Teardown test environment
+      run: rm -rf /mnt/test
