@@ -49,8 +49,8 @@ jobs:
     - name: Unmount
       run: sudo umount /mnt/test
       
-    - name: Remove module
-      run: sudo rmmod rsramfs
+    # - name: Remove module
+    #  run: sudo rmmod rsramfs
 
     - name: Teardown test environment
       run: sudo rm -rf /mnt/test
