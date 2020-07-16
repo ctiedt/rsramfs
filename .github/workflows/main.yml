@@ -31,7 +31,7 @@ jobs:
     - name: Setup tests
       run: |
         make
-        mkdir /mnt/test
+        sudo mkdir /mnt/test
 
     # Runs a single command using the runners shell
     - name: Insert module
@@ -50,4 +50,4 @@ jobs:
       run: sudo rmmod rsramfs
 
     - name: Teardown test environment
-      run: rm -rf /mnt/test
+      run: sudo rm -rf /mnt/test
