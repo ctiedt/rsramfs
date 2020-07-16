@@ -23,27 +23,27 @@ fi
 unit "Insert Module..." "sudo insmod build/rsramfs.ko"
 
 unit "Mount..." "sudo mount -t rsramfs none test"
-# 
-# unit "Create File..." "echo 'Hello World' > test/file"
-# 
-# TESTS_NUMBER=$((TESTS_NUMBER+1))
-# if [[ `cat test/file` = "Hello World" ]]; then
-#   echo "File contents... [ok]"
-#   TESTS_PASSED=$((TESTS_PASSED+1))
-# else
-#   echo "File contents... [failed]"
-# fi
-# 
-# unit "Create Directory..." "mkdir test/dir"
-# 
-# TESTS_NUMBER=$((TESTS_NUMBER+1))
-# if [[ -e test/dir ]]; then
-#   echo "Directory... [ok]"
-#   TESTS_PASSED=$((TESTS_PASSED+1))
-# else
-#   echo "Directory... [failed]"
-# fi
-# 
+
+unit "Create File..." "echo 'Hello World' > test/file"
+
+TESTS_NUMBER=$((TESTS_NUMBER+1))
+if [[ `cat test/file` = "Hello World" ]]; then
+  echo "File contents... [ok]"
+  TESTS_PASSED=$((TESTS_PASSED+1))
+else
+  echo "File contents... [failed]"
+fi
+
+unit "Create Directory..." "mkdir test/dir"
+
+TESTS_NUMBER=$((TESTS_NUMBER+1))
+if [[ -e test/dir ]]; then
+  echo "Directory... [ok]"
+  TESTS_PASSED=$((TESTS_PASSED+1))
+else
+  echo "Directory... [failed]"
+fi
+
 unit "Unmount..." "sudo umount test"
 
 unit "Remove Module..." "sudo rmmod rsramfs"
