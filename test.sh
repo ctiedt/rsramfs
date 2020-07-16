@@ -22,7 +22,7 @@ fi
 
 unit "Insert Module..." "sudo insmod build/rsramfs.ko"
 
-# unit "Mount..." "sudo mount -t rsramfs none test"
+unit "Mount..." "sudo mount -t rsramfs none test"
 # 
 # unit "Create File..." "echo 'Hello World' > test/file"
 # 
@@ -44,7 +44,7 @@ unit "Insert Module..." "sudo insmod build/rsramfs.ko"
 #   echo "Directory... [failed]"
 # fi
 # 
-# unit "Unmount..." "sudo umount test"
+unit "Unmount..." "sudo umount test"
 
 unit "Remove Module..." "sudo rmmod rsramfs"
 
