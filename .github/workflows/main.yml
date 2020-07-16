@@ -27,7 +27,24 @@ jobs:
         rustup default nightly-x86_64-unknown-linux-gnu
         rustup component add rust-src
         cargo install cargo-xbuild
+    
+    - name: Setup tests
+      run: |
+        make
+        mkdir test
 
     # Runs a single command using the runners shell
-    - name: Run tests
-      run: ./test.sh
+    - name: Insert module
+      run: sudo insmod build/rsramfs.ko
+    
+    - name: Mount
+      run: sudo mount -t rsramfs none test
+    
+    - name: Create a file
+      run: echo "Hello World" > test/file
+      
+    - name: Unmount
+      run: sudo umount test
+      
+    - name: Remove module
+      run: sudo rmmod rsramfs
