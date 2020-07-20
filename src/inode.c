@@ -156,44 +156,6 @@ ramfs_get_inode(struct super_block *sb, const struct inode *dir, umode_t mode, d
     return inode;
 }
 
-// The operations our superblock uses to communicate
-// with outside programs
-static const struct super_operations ramfs_ops = {
-    .statfs = simple_statfs,
-    .drop_inode = generic_delete_inode,
-    .show_options = ramfs_show_options,
-};
-
-// Fills our superblock with the relevant info,
-// namely some constants and supported operations.
-// Also initializes an initial inode.
-/*
-int ramfs_fill_super(struct super_block *sb, void *data, int silent)
-{
-    struct ramfs_fs_info *fsi;
-    struct inode *inode;
-
-    fsi = kzalloc(sizeof(struct ramfs_fs_info), GFP_KERNEL);
-    fsi->mount_opts.mode = RAMFS_DEFAULT_MODE;
-    sb->s_fs_info = fsi;
-    if (!fsi)
-        return -ENOMEM;
-
-    sb->s_maxbytes = MAX_LFS_FILESIZE;
-    sb->s_blocksize = PAGE_SIZE;
-    sb->s_blocksize_bits = PAGE_SHIFT;
-    sb->s_magic = RAMFS_MAGIC;
-    sb->s_op = &ramfs_ops;
-    sb->s_time_gran = 1;
-
-    inode = ramfs_get_inode(sb, NULL, S_IFDIR | fsi->mount_opts.mode, 0);
-    sb->s_root = d_make_root(inode);
-    if (!sb->s_root)
-        return -ENOMEM;
-
-    return 0;
-}*/
-
 // Describes the important parts of an fs.
 // Specifically the name and functions for
 // mounting and unmounting.

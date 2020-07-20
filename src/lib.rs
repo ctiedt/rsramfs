@@ -153,6 +153,8 @@ pub extern "C" fn ramfs_symlink(
     }
 }
 
+// The operations our superblock uses to communicate
+// with outside programs
 const RAMFS_OPS: super_operations = super_operations {
     statfs: Some(simple_statfs),
     drop_inode: Some(generic_delete_inode),
@@ -187,23 +189,27 @@ pub extern "C" fn ramfs_fill_super(
         },
     });
 
-    let super_block = SuperBlock::from_ptr(sb);
-    super_block.set_fs_info(&mut *fsi);
-    super_block.set_fields(
-        MAX_LFS_FILESIZE,
-        PAGE_SHIFT as cty::c_uchar,
-        RAMFS_MAGIC as cty::c_ulonglong,
-        &RAMFS_OPS,
-        1,
-    );
+    if let Some(super_block) = SuperBlock::from_ptr(sb) {
+        super_block.set_fs_info(&mut *fsi);
+        super_block.set_fields(
+            MAX_LFS_FILESIZE,
+            PAGE_SHIFT as cty::c_uchar,
+            RAMFS_MAGIC as cty::c_ulonglong,
+            &RAMFS_OPS,
+            1,
+        );
 
-    match rs_ramfs_get_inode(sb, Inode::null(), S_IFDIR as u16 | fsi.mount_opts.mode, 0) {
-        Some(inode) => {
-            unsafe { (*sb).s_root = rs_d_make_root(inode) };
-            0
-        }
-        None => -(ENOMEM as i32),
+        return match rs_ramfs_get_inode(sb, Inode::null(), S_IFDIR as u16 | fsi.mount_opts.mode, 0)
+        {
+            Some(inode) => {
+                super_block.set_root(rs_d_make_root(inode));
+                0
+            }
+            None => -(ENOMEM as i32),
+        };
     }
+
+    -(ENOMEM as i32)
 }
 
 #[no_mangle]
@@ -219,7 +225,10 @@ pub extern "C" fn ramfs_mount(
 
 #[no_mangle]
 pub extern "C" fn ramfs_kill_super(sb: *mut super_block) {
-    use bindings::{kfree, kill_litter_super};
-    unsafe { kfree((*sb).s_fs_info) };
-    unsafe { kill_litter_super(sb) };
+    use c_fns::rs_kill_litter_super;
+    use c_structs::SuperBlock;
+    if let Some(super_block) = SuperBlock::from_ptr(sb) {
+        super_block.free_fs_info();
+        rs_kill_litter_super(super_block);
+    }
 }

@@ -1,8 +1,8 @@
 use crate::bindings::{
     d_instantiate, d_make_root, dentry, dev_t, file_system_type, inc_nlink, inode, iput,
-    mount_nodev, page_symlink, super_block, umode_t,
+    kill_litter_super, mount_nodev, page_symlink, super_block, umode_t,
 };
-use crate::c_structs::Inode;
+use crate::c_structs::{Inode, SuperBlock};
 
 extern "C" {
     fn ramfs_get_inode(
@@ -72,4 +72,8 @@ pub fn rs_page_symlink(
         0 => Ok(()),
         v => Err(v),
     }
+}
+
+pub fn rs_kill_litter_super(sb: SuperBlock) {
+    unsafe { kill_litter_super(sb.get_ptr()) };
 }
