@@ -1,4 +1,14 @@
-use crate::bindings::{current_time, dentry, inode, kfree, super_block, super_operations};
+use crate::bindings::{
+    address_space, address_space_operations, current_time, dentry, dev_t, file_operations,
+    get_next_ino, gfp_t, inc_nlink, init_special_inode, inode, inode_init_owner, inode_nohighmem,
+    inode_operations, kfree, super_block, super_operations, umode_t,
+};
+use crate::c_fns::rs_new_inode;
+
+extern "C" {
+    fn _mapping_set_gfp_mask(m: *mut address_space, mask: gfp_t);
+    fn _mapping_set_unevictable(m: *mut address_space);
+}
 
 pub const DEFAULT_SUPER_OPS: super_operations = super_operations {
     statfs: None,
@@ -28,12 +38,105 @@ pub const DEFAULT_SUPER_OPS: super_operations = super_operations {
     free_cached_objects: None,
 };
 
+pub const DEFAULT_ADDRESS_SPACE_OPERATIONS: address_space_operations = address_space_operations {
+    readpage: None,
+    write_begin: None,
+    write_end: None,
+    set_page_dirty: None,
+    writepage: None,
+    writepages: None,
+    readpages: None,
+    bmap: None,
+    invalidatepage: None,
+    releasepage: None,
+    freepage: None,
+    direct_IO: None,
+    migratepage: None,
+    isolate_page: None,
+    putback_page: None,
+    launder_page: None,
+    is_partially_uptodate: None,
+    is_dirty_writeback: None,
+    error_remove_page: None,
+    swap_activate: None,
+    swap_deactivate: None,
+};
+
+pub const DEFAULT_INODE_OPERATIONS: inode_operations = inode_operations {
+    create: None,
+    lookup: None,
+    link: None,
+    unlink: None,
+    symlink: None,
+    mkdir: None,
+    rmdir: None,
+    mknod: None,
+    rename: None,
+    listxattr: None,
+    fiemap: None,
+    update_time: None,
+    tmpfile: None,
+    set_acl: None,
+    get_link: None,
+    permission: None,
+    get_acl: None,
+    readlink: None,
+    setattr: None,
+    getattr: None,
+    atomic_open: None,
+};
+
+pub const DEFAULT_FILE_OPERATIONS: file_operations = file_operations {
+    read_iter: None,
+    write_iter: None,
+    mmap: None,
+    fsync: None,
+    splice_read: None,
+    splice_write: None,
+    llseek: None,
+    get_unmapped_area: None,
+    read: None,
+    write: None,
+    iterate: None,
+    iterate_shared: None,
+    poll: None,
+    unlocked_ioctl: None,
+    compat_ioctl: None,
+    open: None,
+    flush: None,
+    release: None,
+    fasync: None,
+    lock: None,
+    sendpage: None,
+    check_flags: None,
+    flock: None,
+    setlease: None,
+    fallocate: None,
+    show_fdinfo: None,
+    copy_file_range: None,
+    clone_file_range: None,
+    dedupe_file_range: None,
+    fadvise: None,
+    mmap_supported_flags: 0,
+    owner: core::ptr::null_mut(),
+};
+
 #[derive(Copy, Clone)]
 pub struct Inode {
     ptr: *mut inode,
 }
 
 impl Inode {
+    pub fn new(sb: SuperBlock) -> Option<Self> {
+        Self::from_ptr(rs_new_inode(sb))
+    }
+
+    pub fn null() -> Self {
+        Self {
+            ptr: core::ptr::null_mut(),
+        }
+    }
+
     pub fn from_ptr(inode: *mut inode) -> Option<Self> {
         if inode == core::ptr::null_mut() {
             None
@@ -45,21 +148,61 @@ impl Inode {
     pub fn from_ptr_unchecked(inode: *mut inode) -> Self {
         Self { ptr: inode }
     }
+
     pub fn get_ptr(self) -> *mut inode {
         self.ptr
     }
-    pub fn get_sb(self) -> *mut super_block {
-        unsafe { (*self.ptr).i_sb }
+    pub fn get_sb(self) -> SuperBlock {
+        SuperBlock::from_ptr_unchecked(unsafe { (*self.ptr).i_sb })
+    }
+    pub fn set_amctime_current(self) {
+        unsafe { (*self.ptr).i_atime = current_time(self.ptr) };
+        unsafe { (*self.ptr).i_mtime = (*self.ptr).i_atime };
+        unsafe { (*self.ptr).i_ctime = (*self.ptr).i_mtime };
     }
     pub fn set_mctime_current(self) {
         unsafe { (*self.ptr).i_mtime = current_time(self.ptr) };
         unsafe { (*self.ptr).i_ctime = (*self.ptr).i_mtime };
     }
 
-    pub fn null() -> Self {
-        Self {
-            ptr: core::ptr::null_mut(),
-        }
+    pub fn set_ino(&self) {
+        unsafe { (*self.ptr).i_ino = get_next_ino().into() }
+    }
+
+    pub fn init_owner(&self, dir: Inode, mode: umode_t) {
+        unsafe { inode_init_owner(self.get_ptr(), dir.get_ptr(), mode) };
+    }
+
+    pub fn set_aops(&self, aops: &address_space_operations) {
+        unsafe { (*(*self.ptr).i_mapping).a_ops = aops }
+    }
+
+    pub fn mapping_set_gfp_mask(&self, mask: gfp_t) {
+        unsafe { _mapping_set_gfp_mask((*self.ptr).i_mapping, mask) }
+    }
+
+    pub fn mapping_set_unevictable(&self) {
+        unsafe { _mapping_set_unevictable((*self.ptr).i_mapping) }
+    }
+
+    pub fn set_inode_operations(&self, iop: &inode_operations) {
+        unsafe { (*self.ptr).i_op = iop }
+    }
+
+    pub fn set_file_operations(&self, fop: &file_operations) {
+        unsafe { (*self.ptr).i_fop = fop }
+    }
+
+    pub fn inc_nlink(&self) {
+        unsafe { inc_nlink(self.ptr) }
+    }
+
+    pub fn nohighmem(&self) {
+        unsafe { inode_nohighmem(self.ptr) }
+    }
+
+    pub fn init_special_inode(&self, mode: umode_t, dev: dev_t) {
+        unsafe { init_special_inode(self.ptr, mode, dev) };
     }
 }
 

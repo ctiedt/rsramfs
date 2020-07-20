@@ -1,6 +1,6 @@
 use crate::bindings::{
-    d_instantiate, d_make_root, dentry, file_system_type, inc_nlink, iput, kill_litter_super,
-    mount_nodev, page_symlink, super_block,
+    d_instantiate, d_make_root, dentry, file_system_type, inc_nlink, inode, iput,
+    kill_litter_super, mount_nodev, new_inode, page_symlink, super_block,
 };
 use crate::c_structs::{Inode, SuperBlock};
 
@@ -56,4 +56,8 @@ pub fn rs_page_symlink(
 
 pub fn rs_kill_litter_super(sb: SuperBlock) {
     unsafe { kill_litter_super(sb.get_ptr()) };
+}
+
+pub fn rs_new_inode(sb: SuperBlock) -> *mut inode {
+    unsafe { new_inode(sb.get_ptr()) }
 }
