@@ -1,31 +1,11 @@
 use crate::bindings::{
-    d_instantiate, d_make_root, dentry, dev_t, file_system_type, inc_nlink, inode, iput,
-    kill_litter_super, mount_nodev, page_symlink, super_block, umode_t,
+    d_instantiate, d_make_root, dentry, file_system_type, inc_nlink, iput, kill_litter_super,
+    mount_nodev, page_symlink, super_block,
 };
 use crate::c_structs::{Inode, SuperBlock};
 
 extern "C" {
-    fn ramfs_get_inode(
-        sb: *mut super_block,
-        dir: *const inode,
-        mode: umode_t,
-        dev: dev_t,
-    ) -> *mut inode;
     fn c_dget(dentry: *mut dentry) -> *mut dentry;
-}
-
-pub fn rs_ramfs_get_inode(
-    sb: *mut super_block,
-    dir: Inode,
-    mode: umode_t,
-    dev: dev_t,
-) -> Option<Inode> {
-    let inode = unsafe { ramfs_get_inode(sb, dir.get_ptr(), mode, dev) };
-    if inode == core::ptr::null_mut() {
-        return None;
-    } else {
-        return Some(Inode::from_ptr_unchecked(inode));
-    }
 }
 
 pub fn rs_d_instantiate(dentry: *mut dentry, inode: Inode) {
