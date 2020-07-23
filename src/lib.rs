@@ -18,30 +18,23 @@ mod mem;
 mod bindings;
 
 use bindings::{
-    __set_page_dirty_nobuffers, address_space_operations, dentry, dev_t, file, file_operations,
-    file_system_type, generic_delete_inode, generic_file_llseek, generic_file_mmap,
-    generic_file_read_iter, generic_file_splice_read, generic_file_write_iter, gfp_t, inode,
-    inode_operations, iter_file_splice_write, noop_fsync, page_symlink_inode_operations, seq_file,
-    simple_dir_operations, simple_getattr, simple_link, simple_lookup, simple_readpage,
-    simple_rename, simple_rmdir, simple_setattr, simple_statfs, simple_unlink, simple_write_begin,
+    __set_page_dirty_nobuffers, address_space_operations, dentry, dev_t, 
+    file_system_type, generic_delete_inode, 
+     gfp_t, inode,
+    inode_operations, page_symlink_inode_operations, seq_file,
+    simple_dir_operations, simple_link, simple_lookup, simple_readpage,
+    simple_rename, simple_rmdir, simple_statfs, simple_unlink, simple_write_begin,
     simple_write_end, super_block, super_operations, umode_t,
 };
 
 use c_fns::rs_page_symlink;
 use c_structs::{
-    Inode, SuperBlock, DEFAULT_ADDRESS_SPACE_OPERATIONS, DEFAULT_FILE_OPERATIONS,
-    DEFAULT_INODE_OPERATIONS, DEFAULT_SUPER_OPS,
+    Inode, SuperBlock, DEFAULT_ADDRESS_SPACE_OPERATIONS, 
+     DEFAULT_SUPER_OPS, DEFAULT_INODE_OPERATIONS
 };
 
 extern "C" {
     fn ramfs_show_options(m: *mut seq_file, root: *mut dentry) -> cty::c_int;
-    fn ramfs_mmu_get_unmapped_area(
-        file: *mut file,
-        addr: cty::c_ulong,
-        len: cty::c_ulong,
-        pgoff: cty::c_ulong,
-        flags: cty::c_ulong,
-    ) -> cty::c_ulong;
 }
 
 #[cfg(not(test))]
@@ -83,36 +76,14 @@ const RAMFS_DIR_INODE_OPS: inode_operations = inode_operations {
     ..DEFAULT_INODE_OPERATIONS
 };
 
-// Operations on regular file inodes.
-// Provided by <linux/fs.h>.
-const RAMFS_FILE_INODE_OPS: inode_operations = inode_operations {
-    setattr: Some(simple_setattr),
-    getattr: Some(simple_getattr),
-    ..DEFAULT_INODE_OPERATIONS
-};
-
-// Operations supported by files.
-// All of these are provided by generic functions.
-static mut RAMFS_FILE_OPS: file_operations = file_operations {
-    read_iter: Some(generic_file_read_iter),
-    write_iter: Some(generic_file_write_iter),
-    mmap: Some(generic_file_mmap),
-    fsync: Some(noop_fsync),
-    splice_read: Some(generic_file_splice_read),
-    splice_write: Some(iter_file_splice_write),
-    llseek: Some(generic_file_llseek),
-    get_unmapped_area: Some(ramfs_mmu_get_unmapped_area),
-    ..DEFAULT_FILE_OPERATIONS
-};
-
-#[no_mangle]
-pub extern "C" fn rs_ramfs_get_inode(
+fn rs_ramfs_get_inode(
     sb: SuperBlock,
     dir: Inode,
     mode: umode_t,
     dev: dev_t,
 ) -> Option<Inode> {
     use bindings::{S_IFDIR, S_IFLNK, S_IFMT, S_IFREG};
+    use c_structs::RamfsInodeOps;
 
     const GFP_HIGHUSER: gfp_t = 6422722;
     if let Some(inode) = Inode::new(sb) {
@@ -126,8 +97,7 @@ pub extern "C" fn rs_ramfs_get_inode(
         let _mode = u32::from(mode) & S_IFMT;
         match _mode {
             _ if _mode == S_IFREG => {
-                inode.set_inode_operations(&RAMFS_FILE_INODE_OPS);
-                unsafe { inode.set_file_operations(&RAMFS_FILE_OPS) };
+                inode.ramfs_set_inode_ops();
             }
             _ if _mode == S_IFDIR => {
                 inode.set_inode_operations(&RAMFS_DIR_INODE_OPS);
@@ -168,8 +138,7 @@ pub extern "C" fn ramfs_get_inode(
     }
 }
 
-#[no_mangle]
-pub extern "C" fn rs_ramfs_mknod(
+fn rs_ramfs_mknod(
     dir: Inode,
     dentry: *mut dentry,
     mode: umode_t,
@@ -287,10 +256,12 @@ const RAMFS_OPS: super_operations = super_operations {
 
 const RAMFS_DEFAULT_MODE: umode_t = 0775;
 
+#[repr(C)]
 struct RamfsMountOpts {
     mode: umode_t,
 }
 
+#[repr(C)]
 pub struct RamfsFsInfo {
     mount_opts: RamfsMountOpts,
 }

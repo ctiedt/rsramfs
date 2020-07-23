@@ -1,8 +1,8 @@
 use core::alloc::{GlobalAlloc, Layout};
+use crate::bindings::kfree;
 
 extern "C" {
     fn c_alloc(size: usize) -> *mut u8;
-    fn kfree(ptr: *mut u8);
 }
 
 pub struct KernelAllocator;
@@ -13,7 +13,7 @@ unsafe impl GlobalAlloc for KernelAllocator {
     }
 
     unsafe fn dealloc(&self, ptr: *mut u8, _layout: Layout) {
-        kfree(ptr);
+        kfree(ptr as *mut _ as *mut cty::c_void);
     }
 }
 

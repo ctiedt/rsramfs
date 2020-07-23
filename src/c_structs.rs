@@ -8,6 +8,7 @@ use crate::c_fns::rs_new_inode;
 extern "C" {
     fn _mapping_set_gfp_mask(m: *mut address_space, mask: gfp_t);
     fn _mapping_set_unevictable(m: *mut address_space);
+    fn ramfs_set_inode_ops(inode: *mut inode);
 }
 
 pub const DEFAULT_SUPER_OPS: super_operations = super_operations {
@@ -84,41 +85,6 @@ pub const DEFAULT_INODE_OPERATIONS: inode_operations = inode_operations {
     setattr: None,
     getattr: None,
     atomic_open: None,
-};
-
-pub const DEFAULT_FILE_OPERATIONS: file_operations = file_operations {
-    read_iter: None,
-    write_iter: None,
-    mmap: None,
-    fsync: None,
-    splice_read: None,
-    splice_write: None,
-    llseek: None,
-    get_unmapped_area: None,
-    read: None,
-    write: None,
-    iterate: None,
-    iterate_shared: None,
-    poll: None,
-    unlocked_ioctl: None,
-    compat_ioctl: None,
-    open: None,
-    flush: None,
-    release: None,
-    fasync: None,
-    lock: None,
-    sendpage: None,
-    check_flags: None,
-    flock: None,
-    setlease: None,
-    fallocate: None,
-    show_fdinfo: None,
-    copy_file_range: None,
-    clone_file_range: None,
-    dedupe_file_range: None,
-    fadvise: None,
-    mmap_supported_flags: 0,
-    owner: core::ptr::null_mut(),
 };
 
 #[derive(Copy, Clone)]
@@ -234,7 +200,7 @@ impl SuperBlock {
 
     pub fn free_fs_info(&self) {
         if unsafe { (*self.ptr).s_fs_info } != core::ptr::null_mut() {
-            unsafe { kfree((*self.ptr).s_fs_info) }
+            //unsafe { kfree((*self.ptr).s_fs_info) }
         }
     }
 
@@ -255,5 +221,15 @@ impl SuperBlock {
         unsafe { (*self.ptr).s_magic = magic };
         unsafe { (*self.ptr).s_op = op };
         unsafe { (*self.ptr).s_time_gran = time_gran };
+    }
+}
+
+pub trait RamfsInodeOps {
+    fn ramfs_set_inode_ops(&self);
+}
+
+impl RamfsInodeOps for Inode {
+    fn ramfs_set_inode_ops(&self) {
+        unsafe { ramfs_set_inode_ops(self.ptr) }
     }
 }
