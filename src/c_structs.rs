@@ -194,7 +194,7 @@ impl SuperBlock {
         self.ptr
     }
 
-    pub fn set_fs_info(&self, fsi: &mut crate::RamfsFsInfo) {
+    pub fn set_fs_info(&self, fsi: &mut RamfsFsInfo) {
         unsafe { (*self.ptr).s_fs_info = fsi as *mut _ as *mut cty::c_void };
     }
 
@@ -224,12 +224,38 @@ impl SuperBlock {
     }
 }
 
+#[repr(C)]
+pub struct RamfsMountOpts {
+    pub mode: umode_t,
+    pub debug: bool,
+}
+
+#[repr(C)]
+pub struct RamfsFsInfo {
+    pub mount_opts: RamfsMountOpts,
+}
+
+pub trait RamfsSuperBlockOpts {
+    fn is_in_debug_mode(&self) -> bool;
+}
+
 pub trait RamfsInodeOps {
     fn ramfs_set_inode_ops(&self);
+    fn is_in_debug_mode(&self) -> bool;
+}
+
+impl RamfsSuperBlockOpts for SuperBlock {
+    fn is_in_debug_mode(&self) -> bool {
+        unsafe { (*((*self.ptr).s_fs_info as *mut RamfsFsInfo)).mount_opts.debug}
+    }
 }
 
 impl RamfsInodeOps for Inode {
     fn ramfs_set_inode_ops(&self) {
         unsafe { ramfs_set_inode_ops(self.ptr) }
+    }
+    
+    fn is_in_debug_mode(&self) -> bool {
+        self.get_sb().is_in_debug_mode()
     }
 }

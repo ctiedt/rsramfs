@@ -30,7 +30,7 @@ use bindings::{
 use c_fns::rs_page_symlink;
 use c_structs::{
     Inode, SuperBlock, DEFAULT_ADDRESS_SPACE_OPERATIONS, 
-     DEFAULT_SUPER_OPS, DEFAULT_INODE_OPERATIONS
+     DEFAULT_SUPER_OPS, DEFAULT_INODE_OPERATIONS, RamfsFsInfo, RamfsMountOpts
 };
 
 extern "C" {
@@ -256,20 +256,33 @@ const RAMFS_OPS: super_operations = super_operations {
 
 const RAMFS_DEFAULT_MODE: umode_t = 0775;
 
-#[repr(C)]
-struct RamfsMountOpts {
-    mode: umode_t,
+
+
+fn parse_octal(data: &str) -> Option<umode_t> {
+    if data.chars().all(|c| "012345678".contains(c)) {
+        Some(data.parse::<umode_t>().unwrap())
+    } else {
+        None
+    }
 }
 
-#[repr(C)]
-pub struct RamfsFsInfo {
-    mount_opts: RamfsMountOpts,
+fn ramfs_parse_options(
+    data: &str,
+    opts: &mut RamfsMountOpts,
+) {
+    for substr in data.split_terminator(","){
+        match substr{
+            _ if substr.starts_with("mode=") => opts.mode = parse_octal(substr.split_at(substr.find("=").unwrap()).1).unwrap(),
+            "debug" => opts.debug = true,
+            _ => {}
+        }
+    }
 }
 
 #[no_mangle]
 pub extern "C" fn ramfs_fill_super(
     sb: *mut super_block,
-    _data: *mut cty::c_void,
+    data: *mut cty::c_void,
     _silent: cty::c_int,
 ) -> cty::c_int {
     use bindings::{ENOMEM, PAGE_SHIFT, RAMFS_MAGIC, S_IFDIR};
@@ -279,6 +292,7 @@ pub extern "C" fn ramfs_fill_super(
     let mut fsi = alloc::boxed::Box::new(RamfsFsInfo {
         mount_opts: RamfsMountOpts {
             mode: RAMFS_DEFAULT_MODE,
+            debug: false
         },
     });
 
@@ -291,6 +305,12 @@ pub extern "C" fn ramfs_fill_super(
             &RAMFS_OPS,
             1,
         );
+
+        if data != core::ptr::null_mut() {
+            let rsdata = unsafe { cstr_core::CStr::from_ptr(data as *const cty::c_char) };
+            ramfs_parse_options((rsdata.to_str()).unwrap(), &mut fsi.mount_opts);
+        }
+
 
         return match rs_ramfs_get_inode(
             SuperBlock::from_ptr_unchecked(sb),
