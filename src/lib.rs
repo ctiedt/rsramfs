@@ -328,7 +328,7 @@ fn ramfs_parse_options(data: &str, opts: &mut RamfsMountOpts) {
 #[no_mangle]
 pub extern "C" fn ramfs_fill_super(
     sb: *mut super_block,
-    _data: *mut cty::c_void,
+    data: *mut cty::c_void,
     _silent: cty::c_int,
 ) -> cty::c_int {
     use bindings::{ENOMEM, PAGE_SHIFT, RAMFS_MAGIC, S_IFDIR};
@@ -351,6 +351,11 @@ pub extern "C" fn ramfs_fill_super(
             &RAMFS_OPS,
             1,
         );
+
+        if data != core::ptr::null_mut() {
+            let rsdata = unsafe { cstr_core::CStr::from_ptr(data as *const cty::c_char) };
+            ramfs_parse_options((rsdata.to_str()).unwrap(), &mut fsi.mount_opts);
+        }
 
         return match rs_ramfs_get_inode(
             SuperBlock::from_ptr_unchecked(sb),
