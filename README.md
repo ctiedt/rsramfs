@@ -6,7 +6,7 @@ An implementation of the `ramfs` file system in [Rust](https://rust-lang.org). W
 
 You need a working C toolchain, headers for the kernel you are compiling for and a (nightly) Rust toolchain with `cargo-xbuild`.
 This also requires `rust-src` (install it with `rustup component add rust-src`).
-To compile the module, run `make all` from the base directory. Try it out with `make test` or `sudo insmod build/rsramfs.ko` 
+To compile the module, run `make all` from the base directory. Try it out with `./test.sh` or `sudo insmod build/rsramfs.ko` 
 (don't forget to unload the module with `sudo rmmod rsramfs` afterwards).
 
 ## A short overview
@@ -19,4 +19,14 @@ It also exports some functions to do with memory allocation and IO.
 
 ### What the Rust files do
 
-TODO: Add a better description
+### `io.rs` and `mem.rs`
+
+These files contain functions that have to do with memory allocation and IO, such as a definition of Rust's `print!` macro using `kprintf`.
+
+### `bindings.rs`, `c_structs.rs` and `c_fns.rs`
+
+These files contain bindings to the Linux kernel interface we use and Rust wrappers around them. Most of these wrappers are hand-written.
+
+### `lib.rs`
+
+This is probably the most interesting module. It contains all of the `rsramfs` operations such as mounting, creating files etc.
