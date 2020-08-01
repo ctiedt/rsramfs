@@ -12,8 +12,6 @@
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 
-//extern struct dentry *dget(struct dentry *);
-
 // Called on unmount.
 // Frees a pointer we allocated in the superblock
 // and kills it.
@@ -51,3 +49,7 @@ extern struct dentry *ramfs_mount(struct file_system_type *fs_type, int flags, c
 // namely some constants and supported operations.
 // Also initializes an initial inode.
 extern int ramfs_fill_super(struct super_block *sb, void *data, int silent);
+
+// Shows the mount options of our fs.
+// In our case mode and whether we're in debug mode
+extern int ramfs_show_options(struct seq_file *m, struct dentry *root);

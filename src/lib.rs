@@ -29,12 +29,13 @@ use bindings::{
 
 use c_fns::rs_page_symlink;
 use c_structs::{
-    Inode, SuperBlock, DEFAULT_ADDRESS_SPACE_OPERATIONS, DEFAULT_FILE_OPERATIONS,
-    DEFAULT_INODE_OPERATIONS, DEFAULT_SUPER_OPS,
+    Dentry, Inode, RamfsFsInfo, RamfsInodeOps, RamfsMountOpts, RamfsSuperBlockOps, SuperBlock,
+    DEFAULT_ADDRESS_SPACE_OPERATIONS, DEFAULT_FILE_OPERATIONS, DEFAULT_INODE_OPERATIONS,
+    DEFAULT_SUPER_OPS,
 };
 
 extern "C" {
-    fn ramfs_show_options(m: *mut seq_file, root: *mut dentry) -> cty::c_int;
+    fn seq_printf(m: *mut seq_file, f: *const cty::c_uchar, ...);
     fn ramfs_mmu_get_unmapped_area(
         file: *mut file,
         addr: cty::c_ulong,
@@ -276,6 +277,21 @@ pub extern "C" fn ramfs_symlink(
     }
 }
 
+// Shows the mount options of our fs.
+// In our case mode and whether we're in debug mode
+#[no_mangle]
+pub extern "C" fn ramfs_show_options(m: *mut seq_file, root: *mut dentry) -> cty::c_int {
+    let fsi = Dentry::from_ptr(root).get_sb().get_fs_info();
+    if fsi.mount_opts.mode != RAMFS_DEFAULT_MODE {
+        unsafe { seq_printf(m, ",mode=%o".as_ptr(), fsi.mount_opts.mode as cty::c_uint) };
+    }
+    if fsi.mount_opts.debug {
+        unsafe { seq_printf(m, ",debug".as_ptr()) };
+    }
+
+    0
+}
+
 // The operations our superblock uses to communicate
 // with outside programs
 const RAMFS_OPS: super_operations = super_operations {
@@ -287,12 +303,26 @@ const RAMFS_OPS: super_operations = super_operations {
 
 const RAMFS_DEFAULT_MODE: umode_t = 0775;
 
-struct RamfsMountOpts {
-    mode: umode_t,
+fn parse_octal(data: &str) -> Option<umode_t> {
+    if data.chars().all(|c| "012345678".contains(c)) {
+        Some(u16::from_str_radix(data, 8).unwrap())
+    } else {
+        None
+    }
 }
 
-pub struct RamfsFsInfo {
-    mount_opts: RamfsMountOpts,
+fn ramfs_parse_options(data: &str, opts: &mut RamfsMountOpts) {
+    for substr in data.split_terminator(",") {
+        match substr {
+            _ if substr.starts_with("mode=") => {
+                if let Some(mode) = parse_octal(substr.split_at(substr.find("=").unwrap()).1) {
+                    opts.mode = mode;
+                }
+            }
+            "debug" => opts.debug = true,
+            _ => {}
+        }
+    }
 }
 
 #[no_mangle]
@@ -308,6 +338,7 @@ pub extern "C" fn ramfs_fill_super(
     let mut fsi = alloc::boxed::Box::new(RamfsFsInfo {
         mount_opts: RamfsMountOpts {
             mode: RAMFS_DEFAULT_MODE,
+            debug: false,
         },
     });
 
