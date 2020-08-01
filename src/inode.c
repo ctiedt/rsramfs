@@ -43,39 +43,11 @@ void c_print(char *msg, int len)
     printk(KERN_INFO "%.*s", len, msg);
 }
 
-// The mount options on our fs.
-// We only support the mode.
-struct ramfs_mount_opts
-{
-    umode_t mode;
-};
-
-// All the info we provide about our fs
-// are the mount options.
-struct ramfs_fs_info
-{
-    struct ramfs_mount_opts mount_opts;
-};
-
-#define RAMFS_DEFAULT_MODE 0775
-
 unsigned long
 ramfs_mmu_get_unmapped_area(struct file *file, unsigned long addr, unsigned long len,
                             unsigned long pgoff, unsigned long flags)
 {
     return current->mm->get_unmapped_area(file, addr, len, pgoff, flags);
-}
-
-// Shows the mount options of our fs.
-// In our case that should just be the mode,
-// i.e. default permissions.
-int ramfs_show_options(struct seq_file *m, struct dentry *root)
-{
-    struct ramfs_fs_info *fsi = root->d_sb->s_fs_info;
-
-    if (fsi->mount_opts.mode != RAMFS_DEFAULT_MODE)
-        seq_printf(m, ",mode=%o", fsi->mount_opts.mode);
-    return 0;
 }
 
 const struct super_operations ramfs_ops = {

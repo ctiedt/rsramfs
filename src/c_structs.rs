@@ -224,19 +224,48 @@ impl SuperBlock {
     }
 }
 
+pub struct Dentry {
+    ptr: *mut dentry,
+}
+
+impl Dentry {
+    pub fn from_ptr(ptr: *mut dentry) -> Self {
+        Self { ptr }
+    }
+
+    pub fn get_ptr(&self) -> *mut dentry {
+        self.ptr
+    }
+
+    pub fn get_name(&self) -> &str {
+        unsafe {
+            cstr_core::CStr::from_ptr((*self.ptr).d_name.name as *const cty::c_char)
+                .to_str()
+                .unwrap()
+        }
+    }
+
+    pub fn get_sb(&self) -> SuperBlock {
+        SuperBlock::from_ptr_unchecked(unsafe { (*self.ptr).d_sb })
+    }
+}
+
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct RamfsMountOpts {
     pub mode: umode_t,
     pub debug: bool,
 }
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct RamfsFsInfo {
     pub mount_opts: RamfsMountOpts,
 }
 
-pub trait RamfsSuperBlockOpts {
+pub trait RamfsSuperBlockOps {
     fn is_in_debug_mode(&self) -> bool;
+    fn get_fs_info(&self) -> RamfsFsInfo;
 }
 
 pub trait RamfsInodeOps {
@@ -244,9 +273,17 @@ pub trait RamfsInodeOps {
     fn is_in_debug_mode(&self) -> bool;
 }
 
-impl RamfsSuperBlockOpts for SuperBlock {
+impl RamfsSuperBlockOps for SuperBlock {
     fn is_in_debug_mode(&self) -> bool {
-        unsafe { (*((*self.ptr).s_fs_info as *mut RamfsFsInfo)).mount_opts.debug}
+        unsafe {
+            (*((*self.ptr).s_fs_info as *mut RamfsFsInfo))
+                .mount_opts
+                .debug
+        }
+    }
+
+    fn get_fs_info(&self) -> RamfsFsInfo {
+        unsafe { *((*self.ptr).s_fs_info as *mut RamfsFsInfo) }
     }
 }
 
@@ -254,7 +291,6 @@ impl RamfsInodeOps for Inode {
     fn ramfs_set_inode_ops(&self) {
         unsafe { ramfs_set_inode_ops(self.ptr) }
     }
-    
     fn is_in_debug_mode(&self) -> bool {
         self.get_sb().is_in_debug_mode()
     }

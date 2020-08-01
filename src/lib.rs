@@ -18,23 +18,21 @@ mod mem;
 mod bindings;
 
 use bindings::{
-    __set_page_dirty_nobuffers, address_space_operations, dentry, dev_t, 
-    file_system_type, generic_delete_inode, 
-     gfp_t, inode,
-    inode_operations, page_symlink_inode_operations, seq_file,
-    simple_dir_operations, simple_link, simple_lookup, simple_readpage,
-    simple_rename, simple_rmdir, simple_statfs, simple_unlink, simple_write_begin,
-    simple_write_end, super_block, super_operations, umode_t,
+    __set_page_dirty_nobuffers, address_space_operations, dentry, dev_t, file_system_type,
+    generic_delete_inode, gfp_t, inode, inode_operations, page_symlink_inode_operations, seq_file,
+    simple_dir_operations, simple_link, simple_lookup, simple_readpage, simple_rename,
+    simple_rmdir, simple_statfs, simple_unlink, simple_write_begin, simple_write_end, super_block,
+    super_operations, umode_t,
 };
 
 use c_fns::rs_page_symlink;
 use c_structs::{
-    Inode, SuperBlock, DEFAULT_ADDRESS_SPACE_OPERATIONS, 
-     DEFAULT_SUPER_OPS, DEFAULT_INODE_OPERATIONS, RamfsFsInfo, RamfsMountOpts
+    Dentry, Inode, RamfsFsInfo, RamfsMountOpts, RamfsSuperBlockOps, SuperBlock,
+    DEFAULT_ADDRESS_SPACE_OPERATIONS, DEFAULT_INODE_OPERATIONS, DEFAULT_SUPER_OPS,
 };
 
 extern "C" {
-    fn ramfs_show_options(m: *mut seq_file, root: *mut dentry) -> cty::c_int;
+    fn seq_printf(m: *mut seq_file, f: *const cty::c_uchar, ...);
 }
 
 #[cfg(not(test))]
@@ -76,12 +74,7 @@ const RAMFS_DIR_INODE_OPS: inode_operations = inode_operations {
     ..DEFAULT_INODE_OPERATIONS
 };
 
-fn rs_ramfs_get_inode(
-    sb: SuperBlock,
-    dir: Inode,
-    mode: umode_t,
-    dev: dev_t,
-) -> Option<Inode> {
+fn rs_ramfs_get_inode(sb: SuperBlock, dir: Inode, mode: umode_t, dev: dev_t) -> Option<Inode> {
     use bindings::{S_IFDIR, S_IFLNK, S_IFMT, S_IFREG};
     use c_structs::RamfsInodeOps;
 
@@ -245,6 +238,21 @@ pub extern "C" fn ramfs_symlink(
     }
 }
 
+// Shows the mount options of our fs.
+// In our case mode and whether we're in debug mode
+#[no_mangle]
+pub extern "C" fn ramfs_show_options(m: *mut seq_file, root: *mut dentry) -> cty::c_int {
+    let fsi = Dentry::from_ptr(root).get_sb().get_fs_info();
+    if fsi.mount_opts.mode != RAMFS_DEFAULT_MODE {
+        unsafe { seq_printf(m, ",mode=%o".as_ptr(), fsi.mount_opts.mode as cty::c_uint) };
+    }
+    if fsi.mount_opts.debug {
+        unsafe { seq_printf(m, ",debug".as_ptr()) };
+    }
+
+    0
+}
+
 // The operations our superblock uses to communicate
 // with outside programs
 const RAMFS_OPS: super_operations = super_operations {
@@ -256,23 +264,22 @@ const RAMFS_OPS: super_operations = super_operations {
 
 const RAMFS_DEFAULT_MODE: umode_t = 0775;
 
-
-
 fn parse_octal(data: &str) -> Option<umode_t> {
     if data.chars().all(|c| "012345678".contains(c)) {
-        Some(data.parse::<umode_t>().unwrap())
+        Some(u16::from_str_radix(data, 8).unwrap())
     } else {
         None
     }
 }
 
-fn ramfs_parse_options(
-    data: &str,
-    opts: &mut RamfsMountOpts,
-) {
-    for substr in data.split_terminator(","){
-        match substr{
-            _ if substr.starts_with("mode=") => opts.mode = parse_octal(substr.split_at(substr.find("=").unwrap()).1).unwrap(),
+fn ramfs_parse_options(data: &str, opts: &mut RamfsMountOpts) {
+    for substr in data.split_terminator(",") {
+        match substr {
+            _ if substr.starts_with("mode=") => {
+                if let Some(mode) = parse_octal(substr.split_at(substr.find("=").unwrap()).1) {
+                    opts.mode = mode;
+                }
+            }
             "debug" => opts.debug = true,
             _ => {}
         }
@@ -292,7 +299,7 @@ pub extern "C" fn ramfs_fill_super(
     let mut fsi = alloc::boxed::Box::new(RamfsFsInfo {
         mount_opts: RamfsMountOpts {
             mode: RAMFS_DEFAULT_MODE,
-            debug: false
+            debug: false,
         },
     });
 
@@ -310,7 +317,6 @@ pub extern "C" fn ramfs_fill_super(
             let rsdata = unsafe { cstr_core::CStr::from_ptr(data as *const cty::c_char) };
             ramfs_parse_options((rsdata.to_str()).unwrap(), &mut fsi.mount_opts);
         }
-
 
         return match rs_ramfs_get_inode(
             SuperBlock::from_ptr_unchecked(sb),
