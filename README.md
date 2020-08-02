@@ -1,13 +1,12 @@
 # rsramfs
 
-An implementation of the `ramfs` file system in [Rust](https://rust-lang.org). We are currently at the stage of porting the C source code to unsafe Rust.
+An implementation of the `ramfs` file system in [Rust](https://rust-lang.org).
 
 ## How to build
 
-You need a working C toolchain, headers for the kernel you are compiling for and a (nightly) Rust toolchain with `cargo-xbuild`.
-This also requires `rust-src` (install it with `rustup component add rust-src`).
-To compile the module, run `make all` from the base directory. Try it out with `./test.sh` or `sudo insmod build/rsramfs.ko` 
-(don't forget to unload the module with `sudo rmmod rsramfs` afterwards).
+You need a working C toolchain, headers for the kernel you are compiling for and a (nightly) Rust toolchain.
+You also need `rust-src` (install it with `rustup component add rust-src`).
+To compile the module, run `make all` from the base directory. Try it out with `./test.sh` or `sudo insmod build/rsramfs.ko` and mount some mount point with the device `none` and the file system type `rsramfs`.
 
 ## A short overview
 
@@ -30,3 +29,11 @@ These files contain bindings to the Linux kernel interface we use and Rust wrapp
 ### `lib.rs`
 
 This is probably the most interesting module. It contains all of the `rsramfs` operations such as mounting, creating files etc.
+
+
+## Acknowledgements
+
+Our build system is a modified version of the one found in [souvik1997/kernel-roulette](https://github.com/souvik1997/kernel-roulette). 
+For generating kernel bindings, we used the system provided by [fishinabarrel/linux-kernel-module-rust](https://github.com/fishinabarrel/linux-kernel-module-rust).
+"Basic neccessities" such as IO and memory management are also taken from or based on these two modules.
+The functionality of our file system is an almost direct port of the C code from the [Linux kernel](https://github.com/torvalds/linux/tree/master/fs/ramfs).
